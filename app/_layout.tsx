@@ -4,7 +4,6 @@ import React, { use } from 'react';
 import { AuthContext, AuthProvider } from '@/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Stack } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -15,17 +14,19 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <SafeAreaView style={{ flex: 1 }}>
           { !isLoggedIn ? 
-            <Stack>
+            <Stack screenOptions={{
+              headerShown: false
+            }}>
               <Stack.Screen name="(authentication)" />
             </Stack>
             :
-            <Stack>
+            <Stack screenOptions={{
+              headerShown: false,
+            }}>
               <Stack.Screen name="(protected)" />
             </Stack>
           }
-        </SafeAreaView>
       </ThemeProvider>
     </AuthProvider>
   );

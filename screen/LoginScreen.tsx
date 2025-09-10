@@ -1,5 +1,4 @@
 import { AuthContext } from "@/contexts/AuthContext";
-import { Link } from "expo-router";
 import { use, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -20,10 +19,6 @@ export default function LoginScreen() {
                 <Text style={styles.label}>Password</Text>
                 <TextInput value={password} onChangeText={setPassword} style={styles.label} />
                 <Button title="Submit" onPress={() => login(email, password)} />
-            </View>
-
-            <View>
-                <Link href={'/(authentication)/signup'} style={styles.label} >Sign Up</Link>
             </View>
         </View>
     );
