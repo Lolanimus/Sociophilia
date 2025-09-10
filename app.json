@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Sociophilia",
-    "slug": "Sociophilia",
+    "slug": "sociophilia",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -37,6 +37,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8be155cc-4318-4ab9-97f0-89e7f64b84ff"
+      }
+    },
+    "owner": "lolanimus"
   }
 }

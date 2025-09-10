@@ -1,0 +1,109 @@
+import { supabase } from '@/utils/supabase';
+import { User } from '@supabase/supabase-js';
+import { useRouter } from 'expo-router';
+import { createContext, PropsWithChildren, useState } from 'react';
+
+type AuthContextValue = {
+  isLoggedIn: boolean,
+  processing: boolean,
+  login: (email: string, password: string) => void,
+  signup: (email: string, username: string, password: string) => void,
+  logout: () => void,
+  scopes: string[],
+  setScopes: (scopes: string[]) => void
+}
+
+export const AuthContext = createContext<AuthContextValue>({
+  isLoggedIn: false,
+  processing: false,
+  login: () => {},
+  signup: () => {},
+  logout: () => {},
+  scopes: [],
+  setScopes: () => {}
+})
+
+export function AuthProvider({children}: PropsWithChildren) {
+  const [processing, setProcessing] = useState(false);
+  const [scopes, setScopes] = useState<string[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  const login = async (email: string, password: string) => {
+    setProcessing(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+          email: email as string,
+          password: password,
+      });
+    setProcessing(false);
+
+    if (error) {
+        console.log("error");
+        console.log(error);
+        return;
+    }
+
+    setUser(data.user);
+
+    console.log("Successfully logged in!");
+    console.log("user:");
+    console.log(user);
+
+    router.replace("/(protected)/contacts");
+  }
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.log("error");
+      console.log(error);
+      return;
+    }
+
+    console.log("Successfully logged out");
+    router.replace("/(authentication)/login");
+  }
+
+  const signup = async (email: string, username: string, password: string) => {
+    setProcessing(true);
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: username
+          }
+        }
+      });
+    setProcessing(false);
+
+    if (error) {
+      console.log("error");
+      console.log(error);
+      return;
+    }
+
+    setUser(data.user);
+
+    console.log("Successfully signed up");
+    console.log("user:");
+    console.log(user);
+    router.replace("/(protected)/contacts");
+  }
+
+  return (
+    <AuthContext value={{
+        isLoggedIn: !!user,
+        processing,
+        login,
+        signup,
+        logout,
+        scopes,
+        setScopes
+    }}>
+        {children}
+    </AuthContext>
+  )
+}
+
