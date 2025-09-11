@@ -5,6 +5,7 @@ import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
 
@@ -18,7 +19,17 @@ export default function LoginScreen() {
                 <TextInput value={email} onChangeText={setEmail} style={styles.label} />
                 <Text style={styles.label}>Password</Text>
                 <TextInput value={password} onChangeText={setPassword} style={styles.label} />
-                <Button title="Submit" onPress={() => login(email, password)} />
+                <Button title="Submit" onPress={async () => 
+                    (await login(email, password) === -1) ? setError(true) : setError(false)
+                } />
+                { 
+                    error ?
+                    <>
+                        <Text style={styles.error}>Error occured when validating the login credentials.</Text>
+                        <Text style={styles.error}>Plese try again.</Text>
+                    </>
+                    : null
+                }
             </View>
         </View>
     );
@@ -35,4 +46,11 @@ const styles = StyleSheet.create({
         lineHeight: 24,
         color: 'white',
     },
+    error: {
+        fontSize: 16,
+        lineHeight: 24,
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 8,
+    }
 });

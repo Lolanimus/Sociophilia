@@ -6,9 +6,9 @@ import { createContext, PropsWithChildren, useState } from 'react';
 type AuthContextValue = {
   isLoggedIn: boolean,
   processing: boolean,
-  login: (email: string, password: string) => void,
-  signup: (email: string, username: string, password: string) => void,
-  logout: () => void,
+  login: (email: string, password: string) => Promise<number>,
+  signup: (email: string, username: string, password: string) => Promise<number>,
+  logout: () => Promise<number>,
   scopes: string[],
   setScopes: (scopes: string[]) => void
 }
@@ -16,9 +16,9 @@ type AuthContextValue = {
 export const AuthContext = createContext<AuthContextValue>({
   isLoggedIn: false,
   processing: false,
-  login: () => {},
-  signup: () => {},
-  logout: () => {},
+  login: async () => { return 0; },
+  signup: async () => { return 0; },
+  logout: async () => { return 0; },
   scopes: [],
   setScopes: () => {}
 })
@@ -40,7 +40,7 @@ export function AuthProvider({children}: PropsWithChildren) {
     if (error) {
         console.log("error");
         console.log(error);
-        return;
+        return -1;
     }
 
     setUser(data.user);
@@ -50,6 +50,7 @@ export function AuthProvider({children}: PropsWithChildren) {
     console.log(user);
 
     router.replace("/(protected)/contacts");
+    return 1;
   }
 
   const logout = async () => {
@@ -58,11 +59,12 @@ export function AuthProvider({children}: PropsWithChildren) {
     if (error) {
       console.log("error");
       console.log(error);
-      return;
+      return -1;
     }
 
     console.log("Successfully logged out");
     router.replace("/(authentication)/login");
+    return 1;
   }
 
   const signup = async (email: string, username: string, password: string) => {
@@ -81,7 +83,7 @@ export function AuthProvider({children}: PropsWithChildren) {
     if (error) {
       console.log("error");
       console.log(error);
-      return;
+      return -1;
     }
 
     setUser(data.user);
@@ -90,6 +92,7 @@ export function AuthProvider({children}: PropsWithChildren) {
     console.log("user:");
     console.log(user);
     router.replace("/(protected)/contacts");
+    return 1;
   }
 
   return (

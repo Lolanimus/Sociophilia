@@ -6,6 +6,8 @@ export default function SignupScreen() {
     const [username, setUsername] = useState("suka");
     const [email, setEmail] = useState("antox.qscwdv@gmail.com");
     const [password, setPassword] = useState("sukablya");
+    const [error, setError] = useState(false);
+
     const { signup } = use(AuthContext);
         
     return (
@@ -17,7 +19,17 @@ export default function SignupScreen() {
             <TextInput style={styles.label} value={email} onChangeText={setEmail}/>
             <Text style={styles.label}>Password</Text>
             <TextInput style={styles.label} value={password} onChangeText={setPassword}/>
-            <Button title="Submit" onPress={() => signup(email, username, password)} />
+            <Button title="Submit" onPress={async () =>
+                (await signup(email, username, password) === -1) ? setError(true) : setError(false)
+            } />
+            { 
+                error ?
+                <>
+                    <Text style={styles.error}>Error occured when validating the login credentials.</Text>
+                    <Text style={styles.error}>Plese try again.</Text>
+                </>
+                : null
+            }
         </View>
     )
 }
@@ -33,4 +45,11 @@ const styles = StyleSheet.create({
         lineHeight: 24,
         color: 'white',
     },
+        error: {
+        fontSize: 16,
+        lineHeight: 24,
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 8,
+    }
 });
