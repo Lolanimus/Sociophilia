@@ -6,8 +6,8 @@ import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 export default function LoginScreen() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("sukablya");
+    const [email, setEmail] = useState("antox.qscwdv@gmail.com");
 
     const { login } = use(AuthContext);
 

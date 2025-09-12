@@ -46,10 +46,8 @@ export function AuthProvider({children}: PropsWithChildren) {
     setUser(data.user);
 
     console.log("Successfully logged in!");
-    console.log("user:");
-    console.log(user);
 
-    router.replace("/(protected)/contacts");
+    router.replace("/(protected)/(contacts)/list");
     return 1;
   }
 
@@ -69,7 +67,7 @@ export function AuthProvider({children}: PropsWithChildren) {
 
   const signup = async (email: string, username: string, password: string) => {
     setProcessing(true);
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error: auth_error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
@@ -78,11 +76,25 @@ export function AuthProvider({children}: PropsWithChildren) {
           }
         }
       });
+
+      const { error: user_error } = await supabase
+        .from('user')
+        .insert([{
+          id: data.user?.id,
+          email: data.user?.email,
+          username: data.user?.user_metadata.username,
+        }]);
     setProcessing(false);
 
-    if (error) {
-      console.log("error");
-      console.log(error);
+    if (user_error) {
+      console.log("user error");
+      console.log(user_error);
+      return -1;
+    }
+
+    if (auth_error) {
+      console.log("auth error");
+      console.log(auth_error);
       return -1;
     }
 
@@ -91,7 +103,7 @@ export function AuthProvider({children}: PropsWithChildren) {
     console.log("Successfully signed up");
     console.log("user:");
     console.log(user);
-    router.replace("/(protected)/contacts");
+    router.replace("/(protected)/(contacts)/list");
     return 1;
   }
 

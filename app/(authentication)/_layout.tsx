@@ -8,8 +8,8 @@ export default function AuthenticationLayout() {
 
   return (
       <Tabs>
-        <Tabs.Screen name="login" />
-        <Tabs.Screen name="signup"/>
+        <Tabs.Screen name="login" options={{ title: "Login" }}/>
+        <Tabs.Screen name="signup" options={{ title: "Sign Up" }}/>
       </Tabs>
   );
 }
