@@ -1,15 +1,18 @@
 import { AuthContext } from "@/contexts/AuthContext";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function SignupScreen() {
     const [username, setUsername] = useState("suka");
     const [email, setEmail] = useState("antox.qscwdv@gmail.com");
     const [password, setPassword] = useState("sukablya");
-    const [error, setError] = useState(false);
 
-    const { signup } = use(AuthContext);
+    const { signup, error, setError } = use(AuthContext);
         
+    useEffect(() => {
+        setError(null);
+    }, [username, email, password, setError])
+
     return (
         <View style={styles.container}>
             <Text>Signup</Text>
@@ -20,15 +23,20 @@ export default function SignupScreen() {
             <Text style={styles.label}>Password</Text>
             <TextInput style={styles.label} value={password} onChangeText={setPassword}/>
             <Button title="Submit" onPress={async () =>
-                (await signup(email, username, password) === -1) ? setError(true) : setError(false)
+                await signup(email, username, password)
             } />
             { 
                 error ?
                 <>
-                    <Text style={styles.error}>Error occured when validating the login credentials.</Text>
+                    <Text style={styles.error}>{error}</Text>
                     <Text style={styles.error}>Plese try again.</Text>
                 </>
-                : null
+                :
+                <>
+                    <Text style={styles.successLabel}>Successfully Signed Up!</Text>
+                    <Text style={styles.successLabel}>Confirm you email</Text>
+                    <Text style={styles.successLabel}>Then go to Login tab to Log In</Text>
+                </>
             }
         </View>
     )
@@ -45,11 +53,18 @@ const styles = StyleSheet.create({
         lineHeight: 24,
         color: 'white',
     },
-        error: {
+    error: {
         fontSize: 16,
         lineHeight: 24,
         color: 'red',
         textAlign: 'center',
         marginTop: 8,
+    },
+    successLabel: {
+        fontSize: 16,
+        lineHeight: 24,
+        color: 'white',
+        textAlign: 'center',
+        marginTop: 12,
     }
 });

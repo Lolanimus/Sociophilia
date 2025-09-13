@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabase';
-import { User } from '@supabase/supabase-js';
+import { AuthResponse, User } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
 import { createContext, PropsWithChildren, useState } from 'react';
 
@@ -10,7 +10,9 @@ type AuthContextValue = {
   signup: (email: string, username: string, password: string) => Promise<number>,
   logout: () => Promise<number>,
   scopes: string[],
-  setScopes: (scopes: string[]) => void
+  setScopes: (scopes: string[]) => void,
+  error: string | null,
+  setError: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export const AuthContext = createContext<AuthContextValue>({
@@ -20,13 +22,16 @@ export const AuthContext = createContext<AuthContextValue>({
   signup: async () => { return 0; },
   logout: async () => { return 0; },
   scopes: [],
-  setScopes: () => {}
+  setScopes: () => {},
+  error: null,
+  setError: () => {}
 })
 
 export function AuthProvider({children}: PropsWithChildren) {
   const [processing, setProcessing] = useState(false);
   const [scopes, setScopes] = useState<string[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const login = async (email: string, password: string) => {
@@ -38,8 +43,9 @@ export function AuthProvider({children}: PropsWithChildren) {
     setProcessing(false);
 
     if (error) {
-        console.log("error");
-        console.log(error);
+        console.log("login error: ");
+        console.log(error.message);
+        setError(error.message);
         return -1;
     }
 
@@ -55,8 +61,9 @@ export function AuthProvider({children}: PropsWithChildren) {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.log("error");
+      console.log("logout error: ");
       console.log(error);
+      setError(error.message);
       return -1;
     }
 
@@ -67,7 +74,7 @@ export function AuthProvider({children}: PropsWithChildren) {
 
   const signup = async (email: string, username: string, password: string) => {
     setProcessing(true);
-      const { data, error: auth_error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
@@ -75,26 +82,13 @@ export function AuthProvider({children}: PropsWithChildren) {
             username: username
           }
         }
-      });
-
-      const { error: user_error } = await supabase
-        .from('user')
-        .insert([{
-          id: data.user?.id,
-          email: data.user?.email,
-          username: data.user?.user_metadata.username,
-        }]);
+      }) as AuthResponse;
     setProcessing(false);
 
-    if (user_error) {
-      console.log("user error");
-      console.log(user_error);
-      return -1;
-    }
-
-    if (auth_error) {
-      console.log("auth error");
-      console.log(auth_error);
+    if (error) {
+      console.log("signup error: ");
+      console.log(error);
+      setError(error.message);
       return -1;
     }
 
@@ -103,7 +97,7 @@ export function AuthProvider({children}: PropsWithChildren) {
     console.log("Successfully signed up");
     console.log("user:");
     console.log(user);
-    router.replace("/(protected)/(contacts)/list");
+
     return 1;
   }
 
@@ -115,7 +109,9 @@ export function AuthProvider({children}: PropsWithChildren) {
         signup,
         logout,
         scopes,
-        setScopes
+        setScopes,
+        error,
+        setError
     }}>
         {children}
     </AuthContext>

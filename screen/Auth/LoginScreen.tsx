@@ -1,15 +1,18 @@
 import { AuthContext } from "@/contexts/AuthContext";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 
 export default function LoginScreen() {
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [password, setPassword] = useState("sukablya");
     const [email, setEmail] = useState("antox.qscwdv@gmail.com");
 
-    const { login } = use(AuthContext);
+    const { login, error, setError } = use(AuthContext);
+
+    useEffect(() => {
+        setError(null);
+    }, [email, password])
 
     return (
         <View style={styles.container}>
@@ -20,12 +23,12 @@ export default function LoginScreen() {
                 <Text style={styles.label}>Password</Text>
                 <TextInput value={password} onChangeText={setPassword} style={styles.label} />
                 <Button title="Submit" onPress={async () => 
-                    (await login(email, password) === -1) ? setError(true) : setError(false)
+                    await login(email, password)
                 } />
                 { 
                     error ?
                     <>
-                        <Text style={styles.error}>Error occured when validating the login credentials.</Text>
+                        <Text style={styles.error}>{error}</Text>
                         <Text style={styles.error}>Plese try again.</Text>
                     </>
                     : null

@@ -2,28 +2,33 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { ContactsContext } from "@/contexts/ContactsContext";
 import { Link } from "expo-router";
 import { use, useEffect } from "react";
-import { Button, FlatList, StyleSheet, Text, View } from "react-native";
+import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
-    const { fetchContacts, contacts } = use(ContactsContext);
-
+    const { fetchContacts, contacts, deleteContact } = use(ContactsContext);
+    // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
-    }, []);
+    }, [contacts, fetchContacts]);
 
   return (
     <View style={styles.container}>
         <View>
         {
-            contacts.length > 0 ? (
+            contacts ? (
                 <FlatList
                     data={contacts}
-                    keyExtractor={(item) => item.id.toString()} 
+                    keyExtractor={(item) => item.username} 
                     renderItem={({ item }) => (                                                                       
-                        <View style={styles.container}>                                                              
+                        <View style={styles.contactItem}>                                                              
                             <Text style={styles.label}>{item.username}</Text>                                    
-                            <Text style={styles.label}>{item.email}</Text>                                      
+                            <Text style={styles.label}>{item.status}</Text>       
+                            <TouchableOpacity style={styles.deleteButton} onPress={
+                                async () => await deleteContact(item.username)
+                            }>
+                                <Text style={styles.deleteText}>X</Text>
+                            </TouchableOpacity>
                         </View>                                                                                        
                     )}
                 />
@@ -64,8 +69,30 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     linkText: {
-      color: 'blue',
-      fontSize: 16,
-      textDecorationLine: 'underline',
+        color: 'blue',
+        fontSize: 16,
+        textDecorationLine: 'underline',
+    },
+    deleteButton: {
+        padding: 8,
+        marginLeft: 10,
+    },
+    deleteText: {
+        color: '#ff4444',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    contactItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+    },
+    error: {
+        fontSize: 16,
+        lineHeight: 24,
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 8,
     }
 });

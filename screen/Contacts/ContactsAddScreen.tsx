@@ -4,26 +4,36 @@ import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function ContactsAddScreen() {
     const [username, setUsername] = useState('');
-    const [error, setError] = useState(false);
+    const { addContact, error, clearError } = use(ContactsContext);
 
-    const { addContact } = use(ContactsContext);
+    const handleUsernameChange = (text: string) => {
+      setUsername(text);
+      if (error) {
+        clearError();
+      }
+    };
 
-    console.log("error is: " + error);
+    const handleSubmit = async () => {
+      const result = await addContact(username);
+      if (result === 1) {
+        setUsername('');
+      }
+    };
 
   return (
     <View style={styles.container}>
         <Text style={styles.label}>Username</Text>
-        <TextInput value={username} onChangeText={setUsername} style={styles.textInput} />
+        <TextInput value={username} onChangeText={handleUsernameChange} style={styles.textInput} />
         <Button 
             onPress = {
-                async () => (await addContact(username) === -1) ? setError(true) : setError(false) 
+                async () => await handleSubmit()
             } 
             title = "Add Contact"
         />
         { 
             error ?
             <>
-                <Text style={styles.error}>Error occured when validating the login credentials.</Text>
+                <Text style={styles.error}>{error}</Text>
                 <Text style={styles.error}>Plese try again.</Text>
             </>
             : null

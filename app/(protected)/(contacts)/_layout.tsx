@@ -10,8 +10,8 @@ export default function ContactsLayout() {
   return (
     <ContactsProvider>
       <Stack>
-        <Stack.Screen name="add" options={{ title: "Add a new Contact" }}/>
         <Stack.Screen name="list" options={{ title: "Contacts List" }}/>
+        <Stack.Screen name="add" options={{ title: "Add a new Contact" }}/>
       </Stack>
     </ContactsProvider>
   );
