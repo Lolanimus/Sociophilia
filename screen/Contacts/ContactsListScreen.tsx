@@ -6,7 +6,7 @@ import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "reac
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
-    const { fetchContacts, contacts, deleteContact } = use(ContactsContext);
+    const { fetchContacts, data, meta, deleteContact, approveContact } = use(ContactsContext);
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
@@ -16,27 +16,34 @@ export default function ContactsListScreen() {
     <View style={styles.container}>
         <View>
         {
-            contacts ? (
-                <FlatList
-                    data={contacts}
-                    keyExtractor={(item) => item.username} 
-                    renderItem={({ item }) => (                                                                       
-                        <View style={styles.contactItem}>                                                              
-                            <Text style={styles.label}>{item.username}</Text>                                    
-                            <Text style={styles.label}>{item.status}</Text>       
-                            <TouchableOpacity style={styles.deleteButton} onPress={
-                                async () => await approveContact(item.username)
-                            }>
-                                <Text style={styles.acceptText}>✓</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.deleteButton} onPress={
-                                async () => await deleteContact(item.username)
-                            }>
-                                <Text style={styles.deleteText}>X</Text>
-                            </TouchableOpacity>
-                        </View>                                                                                        
-                    )}
-                />
+            data ? (
+                <>
+                    <Text style={styles.label}>Total Contacts: {meta!.total_contacts}</Text>
+                    <FlatList
+                        data={data}
+                        keyExtractor={(item) => item.username} 
+                        renderItem={({ item }) => (                                                                       
+                            <View style={styles.contactItem}>                                                              
+                                <Text style={styles.label}>{item.username}</Text>                                    
+                                <Text style={styles.label}>{item.status}</Text>       
+                                {
+                                    (item.status.toString() !== item.requester_pos?.toString() && item.status !== "APPROVED") ? (
+                                        <TouchableOpacity style={styles.deleteButton} onPress={
+                                            async () => await approveContact(item.username)
+                                        }>   
+                                            <Text style={styles.acceptText}>✓</Text>
+                                        </TouchableOpacity>
+                                    ) : null
+                                }
+                                <TouchableOpacity style={styles.deleteButton} onPress={
+                                    async () => await deleteContact(item.username)
+                                }>
+                                    <Text style={styles.deleteText}>X</Text>
+                                </TouchableOpacity>
+                            </View>                                                                                        
+                        )}
+                    />
+                </>
             ) : (
                 <Text>No contacts yet</Text>
             )

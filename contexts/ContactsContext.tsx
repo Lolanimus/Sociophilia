@@ -3,13 +3,28 @@ import { supabase } from '@/utils/supabase';
 import { AuthError } from '@supabase/supabase-js';
 import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
 
-export type ContactShort = {
-  username: string,
-  status: string,
+interface ContactsMeta {
+  total_contacts: number;
+  page_limit: number;
+  page_offset: number;
+}
+
+interface ContactsData {
+  username: string;
+  status: 'REQ_UID1' | 'REQ_UID2' | 'APPROVED'; // or whatever your statuses are,
+  requester_pos?: 'UID1' | 'UID2';
+  email?: string;  // optional for 'list' detail_level
+  phone_number?: string;  // optional for 'list' detail_level
+}
+
+interface ContactsResponse {
+  meta: ContactsMeta;
+  data: ContactsData[];
 }
 
 type ContactsContextValue = {
-  contacts: ContactShort[] | null;
+  meta: ContactsMeta | null;
+  data: ContactsData[] | null;
   loading: boolean;
   error: string | null;
   fetchContacts: () => Promise<number>;
@@ -21,7 +36,8 @@ type ContactsContextValue = {
 }
 
 export const ContactsContext = createContext<ContactsContextValue>({
-  contacts: [],
+  meta: null,
+  data: null,
   loading: false,
   error: null,
   fetchContacts: async () => { return 0; },
@@ -33,7 +49,8 @@ export const ContactsContext = createContext<ContactsContextValue>({
 });
 
 export function ContactsProvider({children}: PropsWithChildren) {
-  const [contacts, setContacts] = useState<ContactShort[] | null>(null);
+  const [meta, setMeta] = useState<ContactsMeta | null>(null);
+  const [data, setData] = useState<ContactsData[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasFetchedRef = useRef(false);
@@ -44,8 +61,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
     setLoading(true);
 
     try {
-      // TODO: for some reason this returns the full list of a contact instead of the short one
-      const { data, error } = await supabase.rpc('get_user_contacts') as { data: ContactShort[]; error: AuthError | null };
+      const { data, error } = await supabase.rpc('get_user_contacts') as { data: ContactsResponse; error: AuthError | null };
       log.info("fetchContacts() was called");
 
       if(error) {
@@ -55,7 +71,9 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
       log.debug("fetchContacts() Data", data);
 
-      setContacts(data);
+      setData(data.data);
+      setMeta(data.meta);
+
       hasFetchedRef.current = true;
 
       return 1;
@@ -68,15 +86,14 @@ export function ContactsProvider({children}: PropsWithChildren) {
     }
   }, []);
 
-  // Contacts are fetched manually when needed
-
   const addContact = useCallback(async (username: string) => {
     setLoading(true);
 
     try {
       const { data, error } = await supabase.rpc('add_user_contact', {
         target_username: username
-      });
+      }) as { data: ContactsData | null; error: AuthError | null};
+
       log.info("addContact() was called");
 
       if (error) {
@@ -87,9 +104,13 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
       log.debug("addContact() Data", data);
 
-      setContacts(prev => {
-        return prev ? [...prev, data] : data;
-      });
+      setData(prev => prev ? [...prev, data!] : [data!]);
+      setMeta(prev => ({
+        total_contacts: (prev?.total_contacts || 0) + 1,
+        page_limit: prev?.page_limit || 20,
+        page_offset: prev?.page_offset || 0
+      }));
+
       return 1;
     } catch (err) {
       log.error('Error adding contact:', err);
@@ -132,7 +153,46 @@ export function ContactsProvider({children}: PropsWithChildren) {
   // };
 
   const approveContact = async (username: string) => {
-    return 0;    
+    setLoading(true);
+
+    try {
+      const cur_user_id = (await supabase.auth.getUser()).data.user?.id;
+      const target_id = (await supabase.from('user').select('id').eq('username', username)).data![0].id;
+
+      log.debug("cur_user_id", cur_user_id);
+      log.debug("target_id", target_id);
+      log.debug("cur_user_id < target_id ? ", cur_user_id! < target_id);
+
+      const { error } = await supabase
+        .rpc("approve_friendship", {
+          target_username: username
+        }) as { data: ContactsData | null; error: AuthError | null };
+
+      log.info("approve_friendship() was called");
+
+      if (error) {
+        log.error('Error approving a contact:', error);
+        setError(error.message);
+        return -1;
+      }
+
+      setData(prev => {
+        return prev!.map(contact => {
+          if (contact.username === username) {
+            return { ...contact, status: 'APPROVED' };
+          }
+          return contact;
+        });
+      });
+
+      return 1;
+    } catch (err) {
+      log.error('Error approving a contact:', err);
+      setError(err as string);
+      return -1;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteContact = async (username: string) => {
@@ -141,7 +201,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
     try {
       const { error } = await supabase
         .rpc("delete_contact", {
-          contact_username: username
+          target_username: username
         });
 
       log.info("deleteContact() was called");
@@ -152,7 +212,12 @@ export function ContactsProvider({children}: PropsWithChildren) {
         return -1;
       }
 
-      setContacts(prev => prev!.filter(contact => contact.username !== username));
+      setData(prev => prev!.filter(contact => contact.username !== username));
+      setMeta(prev => prev ? {
+        ...prev,
+        total_contacts: prev.total_contacts - 1
+      } : null);
+
       return 1;
     } catch (err) {
       log.error('Error deleting contact:', err);
@@ -165,7 +230,8 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
   return (
     <ContactsContext value={{
-      contacts,
+      data,
+      meta,
       loading,
       error,
       fetchContacts,
