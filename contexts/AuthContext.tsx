@@ -1,3 +1,4 @@
+import log from '@/utils/logger';
 import { supabase } from '@/utils/supabase';
 import { AuthResponse, User } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
@@ -43,15 +44,14 @@ export function AuthProvider({children}: PropsWithChildren) {
     setProcessing(false);
 
     if (error) {
-        console.log("login error: ");
-        console.log(error.message);
+        log.error("Login Error: ", error);
         setError(error.message);
         return -1;
     }
 
     setUser(data.user);
 
-    console.log("Successfully logged in!");
+    log.info("Successfully logged in!");
 
     router.replace("/(protected)/(contacts)/list");
     return 1;
@@ -61,13 +61,12 @@ export function AuthProvider({children}: PropsWithChildren) {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.log("logout error: ");
-      console.log(error);
+      log.error("Logout Error", error);
       setError(error.message);
       return -1;
     }
 
-    console.log("Successfully logged out");
+    log.info("Successfully logged out");
     router.replace("/(authentication)/login");
     return 1;
   }
@@ -86,17 +85,14 @@ export function AuthProvider({children}: PropsWithChildren) {
     setProcessing(false);
 
     if (error) {
-      console.log("signup error: ");
-      console.log(error);
+      log.error("Signup Error", error);
       setError(error.message);
       return -1;
     }
 
     setUser(data.user);
 
-    console.log("Successfully signed up");
-    console.log("user:");
-    console.log(user);
+    log.info("Successfully signed up");
 
     return 1;
   }

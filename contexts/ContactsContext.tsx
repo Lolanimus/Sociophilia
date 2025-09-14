@@ -1,3 +1,4 @@
+import log from '@/utils/logger';
 import { supabase } from '@/utils/supabase';
 import { AuthError } from '@supabase/supabase-js';
 import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
@@ -14,6 +15,7 @@ type ContactsContextValue = {
   fetchContacts: () => Promise<number>;
   addContact: (username: string) => Promise<number>;
   // updateContact: (id: number, username: string) => Promise<number>;
+  approveContact: (username: string) => Promise<number>;
   deleteContact: (username: string) => Promise<number>;
   clearError: () => void;
 }
@@ -25,6 +27,7 @@ export const ContactsContext = createContext<ContactsContextValue>({
   fetchContacts: async () => { return 0; },
   addContact: async () => { return 0; },
   // updateContact: async () => { return 0; },
+  approveContact: async () => { return 0; },
   deleteContact: async () => { return 0; },
   clearError: () => {}
 });
@@ -43,19 +46,21 @@ export function ContactsProvider({children}: PropsWithChildren) {
     try {
       // TODO: for some reason this returns the full list of a contact instead of the short one
       const { data, error } = await supabase.rpc('get_user_contacts') as { data: ContactShort[]; error: AuthError | null };
+      log.info("fetchContacts() was called");
 
       if(error) {
-        console.log("Fetch Contacts Error: ");
-        console.log(error);
+        log.error("Fetch Contacts Error", error)
         setError(error.message);
       }
 
-      setContacts([...data]);
+      log.debug("fetchContacts() Data", data);
+
+      setContacts(data);
       hasFetchedRef.current = true;
 
       return 1;
     } catch (err) {
-      console.log('Error fetching contacts:', err);
+      log.error('Error fetching contacts:', err);
       setError(err as string);
       return -1;
     } finally {
@@ -71,22 +76,23 @@ export function ContactsProvider({children}: PropsWithChildren) {
     try {
       const { data, error } = await supabase.rpc('add_user_contact', {
         target_username: username
-      }) as { data: ContactShort; error: AuthError | null };
+      });
+      log.info("addContact() was called");
 
       if (error) {
-        console.log('Error adding contact:', error);
+        log.error('Error adding contact:', error);
         setError(error.message);
         return -1;
       }
 
-      // TODO: need to change postgresql function so that it doesnt return ana array but a single sontact
+      log.debug("addContact() Data", data);
+
       setContacts(prev => {
-        const newData = Array.isArray(data) ? data : [data];
-        return prev ? [...prev, ...newData] : newData;
+        return prev ? [...prev, data] : data;
       });
       return 1;
     } catch (err) {
-      console.log('Error adding contact:', err);
+      log.error('Error adding contact:', err);
       setError(err as string);
       return -1;
     } finally {
@@ -125,6 +131,10 @@ export function ContactsProvider({children}: PropsWithChildren) {
   //   }
   // };
 
+  const approveContact = async (username: string) => {
+    return 0;    
+  };
+
   const deleteContact = async (username: string) => {
     setLoading(true);
 
@@ -134,8 +144,10 @@ export function ContactsProvider({children}: PropsWithChildren) {
           contact_username: username
         });
 
+      log.info("deleteContact() was called");
+
       if (error) {
-        console.log('Error deleting contact:', error);
+        log.error('Error deleting contact:', error);
         setError(error.message);
         return -1;
       }
@@ -143,7 +155,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
       setContacts(prev => prev!.filter(contact => contact.username !== username));
       return 1;
     } catch (err) {
-      console.log('Error deleting contact:', err);
+      log.error('Error deleting contact:', err);
       setError(err as string);
       return -1;
     } finally {
@@ -159,6 +171,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
       fetchContacts,
       addContact,
       // updateContact,
+      approveContact,
       deleteContact,
       clearError
     }}>

@@ -10,7 +10,7 @@ export default function ContactsListScreen() {
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
-    }, [contacts, fetchContacts]);
+    }, []);
 
   return (
     <View style={styles.container}>
@@ -24,6 +24,11 @@ export default function ContactsListScreen() {
                         <View style={styles.contactItem}>                                                              
                             <Text style={styles.label}>{item.username}</Text>                                    
                             <Text style={styles.label}>{item.status}</Text>       
+                            <TouchableOpacity style={styles.deleteButton} onPress={
+                                async () => await approveContact(item.username)
+                            }>
+                                <Text style={styles.acceptText}>✓</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity style={styles.deleteButton} onPress={
                                 async () => await deleteContact(item.username)
                             }>
@@ -79,6 +84,11 @@ const styles = StyleSheet.create({
     },
     deleteText: {
         color: '#ff4444',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    acceptText: {
+        color: '#44ff63ff',
         fontSize: 18,
         fontWeight: 'bold',
     },

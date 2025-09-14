@@ -9,8 +9,6 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { isLoggedIn } = use(AuthContext);
 
-  console.log(isLoggedIn);
-
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
