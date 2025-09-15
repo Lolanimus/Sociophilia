@@ -1,8 +1,9 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { ContactsContext } from "@/contexts/ContactsContext";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { use, useEffect } from "react";
 import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
@@ -12,6 +13,15 @@ export default function ContactsListScreen() {
         fetchContacts();
     }, []);
 
+    const pressContact = (contact: any) =>{
+        router.push({
+             pathname: '/(protected)/(chats)/[id]',
+             params: {
+                id: contact.id,
+                userName: contact.name,
+             }
+        });
+    };
   return (
     <View style={styles.container}>
         <View>
@@ -23,8 +33,10 @@ export default function ContactsListScreen() {
                         data={data}
                         keyExtractor={(item) => item.username} 
                         renderItem={({ item }) => (                                                                       
-                            <View style={styles.contactItem}>                                                              
-                                <Text style={styles.label}>{item.username}</Text>                                    
+                            <View style={styles.contactItem}>
+                                <TouchableOpacity onPress={()=> pressContact(item)}>
+                                    <Text style={styles.label}>{item.username}</Text> 
+                                    </TouchableOpacity>                                   
                                 <Text style={styles.label}>{item.status}</Text>       
                                 {
                                     (item.status.toString() !== item.requester_pos?.toString() && item.status !== "APPROVED") ? (
