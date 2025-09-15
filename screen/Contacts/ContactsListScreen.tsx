@@ -8,10 +8,25 @@ import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "reac
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
     const { fetchContacts, data, meta, deleteContact, approveContact } = use(ContactsContext);
+
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
     }, []);
+
+
+    // TODO: 
+    // All the functionality logic should be separated from the Screen Component into a ContactsContext.
+    // ---------------------
+    // Also never use any, only the defined types in /types folder.
+    // ---------------------
+    // Also instead of using user's id for the chat, instead use chat's id
+    // (You can omit this for now, as we don't have chat tables yet.)
+    // (Instead use a username. We don't expose user's Ids).
+    // ---------------------
+    // params: {
+    //  username: contact.username
+    // }
 
     const pressContact = (contact: any) =>{
         router.push({
@@ -22,6 +37,7 @@ export default function ContactsListScreen() {
              }
         });
     };
+
   return (
     <View style={styles.container}>
         <View>
@@ -36,10 +52,10 @@ export default function ContactsListScreen() {
                             <View style={styles.contactItem}>
                                 <TouchableOpacity onPress={()=> pressContact(item)}>
                                     <Text style={styles.label}>{item.username}</Text> 
-                                    </TouchableOpacity>                                   
+                                </TouchableOpacity>                                   
                                 <Text style={styles.label}>{item.status}</Text>       
                                 {
-                                    (item.status.toString() !== item.requester_pos?.toString() && item.status !== "APPROVED") ? (
+                                    (item.status !== item.requester_pos && item.status !== "APPROVED") ? (
                                         <TouchableOpacity style={styles.deleteButton} onPress={
                                             async () => await approveContact(item.username)
                                         }>   
