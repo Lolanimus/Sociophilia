@@ -18,7 +18,7 @@ export default function ContactsListScreen() {
              pathname: '/(protected)/(chats)/[id]',
              params: {
                 id: contact.id,
-                userName: contact.name,
+                userName: contact.username,
              }
         });
     };
