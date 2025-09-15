@@ -7,11 +7,14 @@ import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "reac
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
+
     const { fetchContacts, data, meta, deleteContact, approveContact, pressContact } = use(ContactsContext);
+
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
     }, []);
+
   return (
     <View style={styles.container}>
         <View>
@@ -26,10 +29,10 @@ export default function ContactsListScreen() {
                             <View style={styles.contactItem}>
                                 <TouchableOpacity onPress={()=> pressContact(item)}>
                                     <Text style={styles.label}>{item.username}</Text> 
-                                    </TouchableOpacity>                                   
+                                </TouchableOpacity>                                   
                                 <Text style={styles.label}>{item.status}</Text>       
                                 {
-                                    (item.status.toString() !== item.requester_pos?.toString() && item.status !== "APPROVED") ? (
+                                    (item.status !== item.requester_pos && item.status !== "APPROVED") ? (
                                         <TouchableOpacity style={styles.deleteButton} onPress={
                                             async () => await approveContact(item.username)
                                         }>   
