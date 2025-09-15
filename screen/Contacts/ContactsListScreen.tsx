@@ -1,42 +1,19 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { ContactsContext } from "@/contexts/ContactsContext";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { use, useEffect } from "react";
 import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
-    const { fetchContacts, data, meta, deleteContact, approveContact } = use(ContactsContext);
+
+    const { fetchContacts, data, meta, deleteContact, approveContact, pressContact } = use(ContactsContext);
 
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
     }, []);
-
-
-    // TODO: 
-    // All the functionality logic should be separated from the Screen Component into a ContactsContext.
-    // ---------------------
-    // Also never use any, only the defined types in /types folder.
-    // ---------------------
-    // Also instead of using user's id for the chat, instead use chat's id
-    // (You can omit this for now, as we don't have chat tables yet.)
-    // (Instead use a username. We don't expose user's Ids).
-    // ---------------------
-    // params: {
-    //  username: contact.username
-    // }
-
-    const pressContact = (contact: any) =>{
-        router.push({
-             pathname: '/(protected)/(chats)/[id]',
-             params: {
-                id: contact.id,
-                userName: contact.username,
-             }
-        });
-    };
 
   return (
     <View style={styles.container}>
