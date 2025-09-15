@@ -3,15 +3,16 @@ import { use, useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function SignupScreen() {
-    const [username, setUsername] = useState("suka");
-    const [email, setEmail] = useState("antox.qscwdv@gmail.com");
-    const [password, setPassword] = useState("sukablya");
-
+    const [password, setPassword] = useState(process.env.EXPO_PUBLIC_LOGIN_PASSWORD || '');
+    const [email, setEmail] = useState(process.env.EXPO_PUBLIC_LOGIN_EMAIL || '');
+    const [username, setUsername] = useState(process.env.EXPO_PUBLIC_LOGIN_USERNAME || '');
+    const [submitted, setSubmitted] = useState(false);
     const { signup, error, setError } = use(AuthContext);
         
     useEffect(() => {
         setError(null);
-    }, [username, email, password, setError])
+        setSubmitted(false);
+    }, [username, email, password, setError, setSubmitted])
 
     return (
         <View style={styles.container}>
@@ -22,21 +23,24 @@ export default function SignupScreen() {
             <TextInput style={styles.label} value={email} onChangeText={setEmail}/>
             <Text style={styles.label}>Password</Text>
             <TextInput style={styles.label} value={password} onChangeText={setPassword}/>
-            <Button title="Submit" onPress={async () =>
-                await signup(email, username, password)
-            } />
+            <Button title="Submit" onPress={async () => {
+                if(await signup(email, username, password) !== -1)
+                    setSubmitted(true);
+            }} />
             { 
                 error ?
                 <>
                     <Text style={styles.error}>{error}</Text>
                     <Text style={styles.error}>Plese try again.</Text>
-                </>
-                :
+                </> : null
+            }
+            {
+                submitted ?
                 <>
                     <Text style={styles.successLabel}>Successfully Signed Up!</Text>
                     <Text style={styles.successLabel}>Confirm you email</Text>
                     <Text style={styles.successLabel}>Then go to Login tab to Log In</Text>
-                </>
+                </> : null
             }
         </View>
     )
