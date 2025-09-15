@@ -1,6 +1,7 @@
 import log from '@/utils/logger';
 import { supabase } from '@/utils/supabase';
 import { AuthError } from '@supabase/supabase-js';
+import { router } from 'expo-router';
 import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
 
 interface ContactsMeta {
@@ -32,6 +33,7 @@ type ContactsContextValue = {
   // updateContact: (id: number, username: string) => Promise<number>;
   approveContact: (username: string) => Promise<number>;
   deleteContact: (username: string) => Promise<number>;
+  pressContact: (Contacts: ContactsData) => void;
   clearError: () => void;
 }
 
@@ -45,6 +47,7 @@ export const ContactsContext = createContext<ContactsContextValue>({
   // updateContact: async () => { return 0; },
   approveContact: async () => { return 0; },
   deleteContact: async () => { return 0; },
+  pressContact: () => {},
   clearError: () => {}
 });
 
@@ -228,6 +231,14 @@ export function ContactsProvider({children}: PropsWithChildren) {
     }
   };
 
+   const pressContact = (Contacts: ContactsData) =>{
+    router.push({
+      pathname: '/(protected)/(chats)/[id]',
+      params: {
+        id: Contacts.username,
+      }
+    });
+  };
   return (
     <ContactsContext value={{
       data,
@@ -239,7 +250,8 @@ export function ContactsProvider({children}: PropsWithChildren) {
       // updateContact,
       approveContact,
       deleteContact,
-      clearError
+      clearError,
+      pressContact,
     }}>
       {children}
     </ContactsContext>

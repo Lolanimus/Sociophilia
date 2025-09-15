@@ -1,27 +1,17 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { ContactsContext } from "@/contexts/ContactsContext";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { use, useEffect } from "react";
 import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
-    const { fetchContacts, data, meta, deleteContact, approveContact } = use(ContactsContext);
+    const { fetchContacts, data, meta, deleteContact, approveContact, pressContact } = use(ContactsContext);
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
     }, []);
-
-    const pressContact = (contact: any) =>{
-        router.push({
-             pathname: '/(protected)/(chats)/[id]',
-             params: {
-                id: contact.id,
-                userName: contact.username,
-             }
-        });
-    };
   return (
     <View style={styles.container}>
         <View>
