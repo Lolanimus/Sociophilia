@@ -1,3 +1,5 @@
+import { ContactsData, ContactsResponse } from "./api.types"
+
 export type Json =
   | string
   | number
@@ -41,35 +43,35 @@ export type Database = {
         }
         Relationships: []
       }
-      user_friend: {
+      user_contacts: {
         Row: {
-          id: number
+          id: string
           status: Database["public"]["Enums"]["user_friend_status"]
           uid1: string
           uid2: string
         }
         Insert: {
-          id?: number
+          id?: string
           status: Database["public"]["Enums"]["user_friend_status"]
           uid1: string
           uid2: string
         }
         Update: {
-          id?: number
+          id?: string
           status?: Database["public"]["Enums"]["user_friend_status"]
           uid1?: string
           uid2?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_friend_uid1_fkey"
+            foreignKeyName: "user_contacts_uid1_fkey"
             columns: ["uid1"]
             isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "user_friend_uid2_fkey"
+            foreignKeyName: "user_contacts_uid2_fkey"
             columns: ["uid2"]
             isOneToOne: false
             referencedRelation: "user"
@@ -82,10 +84,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_user_contact: {
+        Args: { target_username: string }
+        Returns: ContactsData
+      }
+      approve_friendship: {
+        Args: { target_username: string }
+        Returns: void
+      }
+      delete_contact: {
+        Args: { target_username: string }
+        Returns: void
+      }
+      get_user_contacts: {
+        Args: {
+          detail_level?: string
+          page_limit?: number
+          page_offset?: number
+        }
+        Returns: ContactsResponse
+      }
     }
     Enums: {
-      user_friend_status: "REQ_UID1" | "REQ_UID2" | "FRIEND"
+      user_friend_status: "REQ_UID1" | "REQ_UID2" | "APPROVED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -213,7 +234,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      user_friend_status: ["REQ_UID1", "REQ_UID2", "FRIEND"],
+      user_friend_status: ["REQ_UID1", "REQ_UID2", "APPROVED"],
     },
   },
 } as const

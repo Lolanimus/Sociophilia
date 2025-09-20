@@ -1,27 +1,12 @@
+import { ContactsData, ContactsMeta, ContactsResponse } from '@/types/api.types';
 import log from '@/utils/logger';
 import { supabase } from '@/utils/supabase';
+<<<<<<< HEAD
 import { AuthError } from '@supabase/supabase-js';
+=======
+>>>>>>> 82b61aaa808de67e583a547e558a3aaca4457e3f
 import { router } from 'expo-router';
 import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
-
-interface ContactsMeta {
-  total_contacts: number;
-  page_limit: number;
-  page_offset: number;
-}
-
-interface ContactsData {
-  username: string;
-  status: 'REQ_UID1' | 'REQ_UID2' | 'APPROVED'; // or whatever your statuses are,
-  requester_pos?: 'UID1' | 'UID2';
-  email?: string;  // optional for 'list' detail_level
-  phone_number?: string;  // optional for 'list' detail_level
-}
-
-interface ContactsResponse {
-  meta: ContactsMeta;
-  data: ContactsData[];
-}
 
 type ContactsContextValue = {
   meta: ContactsMeta | null;
@@ -64,7 +49,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.rpc('get_user_contacts') as { data: ContactsResponse; error: AuthError | null };
+      const { data, error } = await supabase.rpc('get_user_contacts').single().overrideTypes<ContactsResponse>();
       log.info("fetchContacts() was called");
 
       if(error) {
@@ -74,8 +59,8 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
       log.debug("fetchContacts() Data", data);
 
-      setData(data.data);
-      setMeta(data.meta);
+      setData(data!.data);
+      setMeta(data!.meta);
 
       hasFetchedRef.current = true;
 
@@ -95,7 +80,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
     try {
       const { data, error } = await supabase.rpc('add_user_contact', {
         target_username: username
-      }) as { data: ContactsData | null; error: AuthError | null};
+      }).single().overrideTypes<ContactsData>();
 
       log.info("addContact() was called");
 
@@ -169,7 +154,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
       const { error } = await supabase
         .rpc("approve_friendship", {
           target_username: username
-        }) as { data: ContactsData | null; error: AuthError | null };
+        });
 
       log.info("approve_friendship() was called");
 
