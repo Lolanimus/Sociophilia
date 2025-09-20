@@ -7,21 +7,13 @@ import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "reac
 
 export default function ContactsListScreen() {
     const { logout } = use(AuthContext);
-<<<<<<< HEAD
-    const { fetchContacts, data, meta, deleteContact, approveContact, pressContact } = use(ContactsContext);
-=======
-
     const { fetchContacts, data, meta, deleteContact, approveContact, pressContact } = use(ContactsContext);
 
->>>>>>> 82b61aaa808de67e583a547e558a3aaca4457e3f
     // Only fetch contacts once when this screen first loads
     useEffect(() => {
         fetchContacts();
     }, []);
-<<<<<<< HEAD
-=======
 
->>>>>>> 82b61aaa808de67e583a547e558a3aaca4457e3f
   return (
     <View style={styles.container}>
         <View>

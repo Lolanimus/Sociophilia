@@ -21,5 +21,14 @@ interface ContactsResponse {
   data: ContactsData[];
 }
 
-export { ContactsData, ContactsMeta, ContactsResponse };
+interface Chat{
+  id: string,
+  createdAt: Date;
+}
+
+interface ChatParticipant{
+  chatId: string;
+  participantId: string;
+}
+export { Chat, ChatParticipant, ContactsData, ContactsMeta, ContactsResponse };
 

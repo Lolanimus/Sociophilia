@@ -1,10 +1,6 @@
 import { ContactsData, ContactsMeta, ContactsResponse } from '@/types/api.types';
 import log from '@/utils/logger';
 import { supabase } from '@/utils/supabase';
-<<<<<<< HEAD
-import { AuthError } from '@supabase/supabase-js';
-=======
->>>>>>> 82b61aaa808de67e583a547e558a3aaca4457e3f
 import { router } from 'expo-router';
 import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
 
