@@ -1,14 +1,22 @@
+import { chatContext } from '@/contexts/ChatsContext';
 import { useLocalSearchParams } from 'expo-router';
+import { useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 export default function ChatScreen(){
   const {id, userName} = useLocalSearchParams();
+  const { chats, createChat } = useContext(chatContext);
 
+  const handleCreateChat = async () => {
+    const newChatId = await createChat([id as string, "currentUserId"]);
+  }
+ 
   return (
     <View style={styles.container}>
       <View style={styles.border}>
          <Text style={styles.header}>{userName}</Text>
       </View>
-      <TouchableOpacity><Text style={styles.acceptText}>Create Chat</Text></TouchableOpacity>
+          <TouchableOpacity onPress={handleCreateChat}><Text style={styles.acceptText}>Create Chat</Text></TouchableOpacity>
     </View>
   )
 }

@@ -5,20 +5,20 @@ import { createContext, PropsWithChildren, useState } from 'react';
 
 type ChatContextValue = {
   chats: Chat[];
-  participant: ChatParticipant[];
+  participants: ChatParticipant[];
   error: string | null;
   createChat: (participantIds: string[]) => Promise<string | null>;
 }
-const chatContext = createContext<ChatContextValue>({
+export const chatContext = createContext<ChatContextValue>({
   chats: [],
-  participant: [],
+  participants: [],
   error: null,
   createChat: async () => null,
 });
 
 export function ChatProvider({children} : PropsWithChildren){
   const [chats, setChats] = useState<Chat[]>([]);
-  const [participant, setParticipant] = useState <ChatParticipant[]>([]);
+  const [participants, setParticipant] = useState <ChatParticipant[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const createChat = async (participantsId: string [])=> {
@@ -41,7 +41,7 @@ export function ChatProvider({children} : PropsWithChildren){
       const { error: partError } = await supabase
       .from("chat_participant")
       .insert(participants);
-      
+
      if (partError) {
       log.error("Error adding participants:", partError);
       setError(partError.message);
@@ -52,7 +52,7 @@ export function ChatProvider({children} : PropsWithChildren){
    return (
       <chatContext.Provider value={{
        chats,
-       participant,
+       participants,
        error,
        createChat,
       }}>
