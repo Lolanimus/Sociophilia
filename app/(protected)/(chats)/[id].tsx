@@ -8,13 +8,13 @@ export default function ChatScreen(){
   const { chats, createChat } = useContext(chatContext);
 
   const handleCreateChat = async () => {
-    const newChatId = await createChat([id as string, "currentUserId"]);
+    const newChatId = await createChat(id as string);
   }
  
   return (
     <View style={styles.container}>
       <View style={styles.border}>
-         <Text style={styles.header}>{userName}</Text>
+         <Text style={styles.header}>{id}</Text>
       </View>
           <TouchableOpacity onPress={handleCreateChat}><Text style={styles.acceptText}>Create Chat</Text></TouchableOpacity>
     </View>
