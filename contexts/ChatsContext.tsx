@@ -1,6 +1,6 @@
 import { Chat, ChatParticipant } from "@/types/api.types";
 import log from "@/utils/logger";
-import supabase from "@/utils/supabase";
+import { supabase } from "@/utils/supabase";
 import { createContext, PropsWithChildren, useState } from "react";
 
 type ChatContextValue = {

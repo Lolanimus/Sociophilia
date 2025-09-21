@@ -13,7 +13,7 @@ export default function ChatScreen(){
       <View style={styles.border}>
          <Text style={styles.header}>{id}</Text>
       </View>
-          <TouchableOpacity onPress={() => createChat(userName as string)}><Text style={styles.acceptText}>Create Chat</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => createChat(id as string)}><Text style={styles.acceptText}>Create Chat</Text></TouchableOpacity>
     </View>
   )
 }
