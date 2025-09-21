@@ -1,4 +1,4 @@
-import { chatContext } from "@/contexts/ChatsContext";
+import { chatContext } from '@/contexts/ChatsContext';
 import {
   ContactsData,
   ContactsMeta,
@@ -13,7 +13,7 @@ import {
   useCallback,
   useContext,
   useRef,
-  useState,
+  useState
 } from "react";
 
 type ContactsContextValue = {
@@ -57,7 +57,7 @@ export function ContactsProvider({ children }: PropsWithChildren) {
   const [data, setData] = useState<ContactsData[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { createChat } = useContext(chatContext);
+  const { createChat } = useContext(chatContext); 
   const hasFetchedRef = useRef(false);
 
   const clearError = () => setError(null);
@@ -248,19 +248,19 @@ export function ContactsProvider({ children }: PropsWithChildren) {
   const pressContact = async (Contacts: ContactsData) => {
     try {
       const newChatId = await createChat(Contacts.username);
+      log.error(newChatId);
 
-      if (!newChatId) {
-        log.error("Failed to create chat");
+      if (!newChatId){
         return;
       }
+
       router.push({
         pathname: "/(protected)/(chats)/[id]",
-        params: { id: newChatId },
+        params: { id: newChatId?.toString() },
       });
     } catch (err) {
       log.error("Error creating chat:", err);
-      setError(err as string);
-      return -1;
+     setError(err instanceof Error ? err.message : String(err));
     }
   };
   return (

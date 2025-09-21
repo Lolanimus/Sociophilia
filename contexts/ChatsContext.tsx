@@ -26,14 +26,17 @@ export function ChatProvider({ children }: PropsWithChildren) {
       const { data, error } = await supabase.rpc("create_direct_chat", {
         target_username: otherUsername,
       });
-
       if (error) {
         log.error("Error creating chat:", error);
         setError(error.message);
-        return -1;
       }
-       log.info("Chat created successfully:", data);
-      return data;
+      const chatId = data?.id;
+      if (!chatId) {
+        log.error("chat_id not found in RPC result", data);
+        return null;
+      }
+      log.info("Chat created successfully:", data);
+      return chatId.toString();
     } catch (err: any) {
       setError(err.message);
       log.error(err.message);
