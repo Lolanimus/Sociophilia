@@ -23,40 +23,16 @@ export function ChatProvider({ children }: PropsWithChildren) {
 
   const createChat = async (otherUsername: string) => {
     try {
-      const { data: currentUserData } = await supabase.auth.getUser();
-      const currentUserId = currentUserData?.user?.id;
-      const { data: otherUser } = await supabase
-        .from("user")
-        .select("id")
-        .eq("username", otherUsername)
-        .single();
-
-      const otherUserId = otherUser?.id;
-
-      const { data: chat, error } = await supabase
-        .from("chats")
-        .insert({ metadata: {} })
-        .select()
-        .single();
+      const { data: chat, error } = await supabase.rpc("create_direct_chat", {
+        target_username: otherUsername,
+      });
 
       if (error) {
         log.error("Error creating chat:", error);
         setError(error.message);
         return -1;
       }
-      const newParticipants = [
-        { chat_id: chat.id, participant_id: currentUserId, metadata: {} },
-        { chat_id: chat.id, participant_id: otherUserId, metadata: {} },
-      ];
-      const { error: partError } = await supabase
-        .from("chat_participants")
-        .insert(newParticipants);
 
-      if (partError) {
-        log.error("Error adding participants:", partError);
-        setError(partError.message);
-        return null;
-      }
       return chat.id;
     } catch (err: any) {
       setError(err.message);
