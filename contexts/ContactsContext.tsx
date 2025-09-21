@@ -1,8 +1,20 @@
-import { ContactsData, ContactsMeta, ContactsResponse } from '@/types/api.types';
-import log from '@/utils/logger';
-import { supabase } from '@/utils/supabase';
-import { router } from 'expo-router';
-import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
+import { chatContext } from "@/contexts/ChatsContext";
+import {
+  ContactsData,
+  ContactsMeta,
+  ContactsResponse,
+} from "@/types/api.types";
+import log from "@/utils/logger";
+import { supabase } from "@/utils/supabase";
+import { router } from "expo-router";
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 type ContactsContextValue = {
   meta: ContactsMeta | null;
@@ -16,27 +28,36 @@ type ContactsContextValue = {
   deleteContact: (username: string) => Promise<number>;
   pressContact: (Contacts: ContactsData) => void;
   clearError: () => void;
-}
+};
 
 export const ContactsContext = createContext<ContactsContextValue>({
   meta: null,
   data: null,
   loading: false,
   error: null,
-  fetchContacts: async () => { return 0; },
-  addContact: async () => { return 0; },
+  fetchContacts: async () => {
+    return 0;
+  },
+  addContact: async () => {
+    return 0;
+  },
   // updateContact: async () => { return 0; },
-  approveContact: async () => { return 0; },
-  deleteContact: async () => { return 0; },
+  approveContact: async () => {
+    return 0;
+  },
+  deleteContact: async () => {
+    return 0;
+  },
   pressContact: () => {},
-  clearError: () => {}
+  clearError: () => {},
 });
 
-export function ContactsProvider({children}: PropsWithChildren) {
+export function ContactsProvider({ children }: PropsWithChildren) {
   const [meta, setMeta] = useState<ContactsMeta | null>(null);
   const [data, setData] = useState<ContactsData[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { createChat } = useContext(chatContext);
   const hasFetchedRef = useRef(false);
 
   const clearError = () => setError(null);
@@ -45,11 +66,14 @@ export function ContactsProvider({children}: PropsWithChildren) {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.rpc('get_user_contacts').single().overrideTypes<ContactsResponse>();
+      const { data, error } = await supabase
+        .rpc("get_user_contacts")
+        .single()
+        .overrideTypes<ContactsResponse>();
       log.info("fetchContacts() was called");
 
-      if(error) {
-        log.error("Fetch Contacts Error", error)
+      if (error) {
+        log.error("Fetch Contacts Error", error);
         setError(error.message);
       }
 
@@ -62,7 +86,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
       return 1;
     } catch (err) {
-      log.error('Error fetching contacts:', err);
+      log.error("Error fetching contacts:", err);
       setError(err as string);
       return -1;
     } finally {
@@ -74,30 +98,33 @@ export function ContactsProvider({children}: PropsWithChildren) {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.rpc('add_user_contact', {
-        target_username: username
-      }).single().overrideTypes<ContactsData>();
+      const { data, error } = await supabase
+        .rpc("add_user_contact", {
+          target_username: username,
+        })
+        .single()
+        .overrideTypes<ContactsData>();
 
       log.info("addContact() was called");
 
       if (error) {
-        log.error('Error adding contact:', error);
+        log.error("Error adding contact:", error);
         setError(error.message);
         return -1;
       }
 
       log.debug("addContact() Data", data);
 
-      setData(prev => prev ? [...prev, data!] : [data!]);
-      setMeta(prev => ({
+      setData((prev) => (prev ? [...prev, data!] : [data!]));
+      setMeta((prev) => ({
         total_contacts: (prev?.total_contacts || 0) + 1,
         page_limit: prev?.page_limit || 20,
-        page_offset: prev?.page_offset || 0
+        page_offset: prev?.page_offset || 0,
       }));
 
       return 1;
     } catch (err) {
-      log.error('Error adding contact:', err);
+      log.error("Error adding contact:", err);
       setError(err as string);
       return -1;
     } finally {
@@ -123,7 +150,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
   //       return -1;
   //     }
 
-  //     setContacts(prev => prev.map(contact => 
+  //     setContacts(prev => prev.map(contact =>
   //       contact.id === id ? data : contact
   //     ));
   //     return 1;
@@ -141,29 +168,30 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
     try {
       const cur_user_id = (await supabase.auth.getUser()).data.user?.id;
-      const target_id = (await supabase.from('user').select('id').eq('username', username)).data![0].id;
+      const target_id = (
+        await supabase.from("user").select("id").eq("username", username)
+      ).data![0].id;
 
       log.debug("cur_user_id", cur_user_id);
       log.debug("target_id", target_id);
       log.debug("cur_user_id < target_id ? ", cur_user_id! < target_id);
 
-      const { error } = await supabase
-        .rpc("approve_friendship", {
-          target_username: username
-        });
+      const { error } = await supabase.rpc("approve_friendship", {
+        target_username: username,
+      });
 
       log.info("approve_friendship() was called");
 
       if (error) {
-        log.error('Error approving a contact:', error);
+        log.error("Error approving a contact:", error);
         setError(error.message);
         return -1;
       }
 
-      setData(prev => {
-        return prev!.map(contact => {
+      setData((prev) => {
+        return prev!.map((contact) => {
           if (contact.username === username) {
-            return { ...contact, status: 'APPROVED' };
+            return { ...contact, status: "APPROVED" };
           }
           return contact;
         });
@@ -171,7 +199,7 @@ export function ContactsProvider({children}: PropsWithChildren) {
 
       return 1;
     } catch (err) {
-      log.error('Error approving a contact:', err);
+      log.error("Error approving a contact:", err);
       setError(err as string);
       return -1;
     } finally {
@@ -183,28 +211,33 @@ export function ContactsProvider({children}: PropsWithChildren) {
     setLoading(true);
 
     try {
-      const { error } = await supabase
-        .rpc("delete_contact", {
-          target_username: username
-        });
+      const { error } = await supabase.rpc("delete_contact", {
+        target_username: username,
+      });
 
       log.info("deleteContact() was called");
 
       if (error) {
-        log.error('Error deleting contact:', error);
+        log.error("Error deleting contact:", error);
         setError(error.message);
         return -1;
       }
 
-      setData(prev => prev!.filter(contact => contact.username !== username));
-      setMeta(prev => prev ? {
-        ...prev,
-        total_contacts: prev.total_contacts - 1
-      } : null);
+      setData((prev) =>
+        prev!.filter((contact) => contact.username !== username)
+      );
+      setMeta((prev) =>
+        prev
+          ? {
+              ...prev,
+              total_contacts: prev.total_contacts - 1,
+            }
+          : null
+      );
 
       return 1;
     } catch (err) {
-      log.error('Error deleting contact:', err);
+      log.error("Error deleting contact:", err);
       setError(err as string);
       return -1;
     } finally {
@@ -212,28 +245,40 @@ export function ContactsProvider({children}: PropsWithChildren) {
     }
   };
 
-   const pressContact = (Contacts: ContactsData) =>{
-    router.push({
-      pathname: '/(protected)/(chats)/[id]',
-      params: {
-        id: Contacts.username,
+  const pressContact = async (Contacts: ContactsData) => {
+    try {
+      const newChatId = await createChat(Contacts.username);
+
+      if (!newChatId) {
+        log.error("Failed to create chat");
+        return;
       }
-    });
+      router.push({
+        pathname: "/(protected)/(chats)/[id]",
+        params: { id: newChatId },
+      });
+    } catch (err) {
+      log.error("Error creating chat:", err);
+      setError(err as string);
+      return -1;
+    }
   };
   return (
-    <ContactsContext value={{
-      data,
-      meta,
-      loading,
-      error,
-      fetchContacts,
-      addContact,
-      // updateContact,
-      approveContact,
-      deleteContact,
-      clearError,
-      pressContact,
-    }}>
+    <ContactsContext
+      value={{
+        data,
+        meta,
+        loading,
+        error,
+        fetchContacts,
+        addContact,
+        // updateContact,
+        approveContact,
+        deleteContact,
+        clearError,
+        pressContact,
+      }}
+    >
       {children}
     </ContactsContext>
   );

@@ -23,7 +23,7 @@ export function ChatProvider({ children }: PropsWithChildren) {
 
   const createChat = async (otherUsername: string) => {
     try {
-      const { data: chat, error } = await supabase.rpc("create_direct_chat", {
+      const { data, error } = await supabase.rpc("create_direct_chat", {
         target_username: otherUsername,
       });
 
@@ -32,8 +32,8 @@ export function ChatProvider({ children }: PropsWithChildren) {
         setError(error.message);
         return -1;
       }
-
-      return chat.id;
+       log.info("Chat created successfully:", data);
+      return data;
     } catch (err: any) {
       setError(err.message);
       log.error(err.message);
