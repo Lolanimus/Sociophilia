@@ -9,7 +9,7 @@ type ChatContextValue = {
   error: string | null;
   createChat: (otherUsername: string) => Promise<string | null>;
 };
-export const chatContext = createContext<ChatContextValue>({
+export const ChatContext = createContext<ChatContextValue>({
   chats: [],
   participants: [],
   error: null,
@@ -21,30 +21,32 @@ export function ChatProvider({ children }: PropsWithChildren) {
   const [participants, setParticipant] = useState<ChatParticipant[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const createChat = async (otherUsername: string) => {
+  const createChat = async (otherUsername: string): Promise<string | null> => {
     try {
+      log.info("otherUsername", otherUsername);
+
       const { data, error } = await supabase.rpc("create_direct_chat", {
         target_username: otherUsername,
-      });
+      })
+      .single()
+      .overrideTypes<Chat>();
+
       if (error) {
         log.error("Error creating chat:", error);
         setError(error.message);
-      }
-      const chatId = data?.id;
-      if (!chatId) {
-        log.error("chat_id not found in RPC result", data);
         return null;
       }
+
       log.info("Chat created successfully:", data);
-      return chatId.toString();
+      return data!.id;
     } catch (err: any) {
       setError(err.message);
-      log.error(err.message);
+      log.error("Error on create_direct_chat call", err.message);
       return null;
     }
   };
   return (
-    <chatContext.Provider
+    <ChatContext
       value={{
         chats,
         participants,
@@ -53,6 +55,6 @@ export function ChatProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-    </chatContext.Provider>
+    </ChatContext>
   );
 }

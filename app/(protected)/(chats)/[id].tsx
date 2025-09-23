@@ -1,5 +1,5 @@
 import ChatScreen from "@/screen/Chats/ChatsScreen";
 
-export default function ChatPage() {
+export default function Chat() {
     return <ChatScreen/>
 }

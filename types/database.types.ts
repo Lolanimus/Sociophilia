@@ -1,5 +1,3 @@
-import { ContactsData, ContactsResponse } from "./api.types"
-
 export type Json =
   | string
   | number
@@ -16,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_participants: {
+        Row: {
+          chat_id: string
+          metadata: Json
+          participant_id: string
+        }
+        Insert: {
+          chat_id: string
+          metadata: Json
+          participant_id: string
+        }
+        Update: {
+          chat_id?: string
+          metadata?: Json
+          participant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_participants_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chats: {
+        Row: {
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          metadata: Json
+        }
+        Update: {
+          id?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
       user: {
         Row: {
           email: string | null
@@ -86,15 +132,23 @@ export type Database = {
     Functions: {
       add_user_contact: {
         Args: { target_username: string }
-        Returns: ContactsData
+        Returns: Json
       }
       approve_friendship: {
         Args: { target_username: string }
-        Returns: void
+        Returns: undefined
+      }
+      create_direct_chat: {
+        Args: { target_username: string }
+        Returns: Json
       }
       delete_contact: {
         Args: { target_username: string }
-        Returns: void
+        Returns: boolean
+      }
+      get_client_chats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_user_contacts: {
         Args: {
@@ -102,10 +156,15 @@ export type Database = {
           page_limit?: number
           page_offset?: number
         }
-        Returns: ContactsResponse
+        Returns: Json
+      }
+      get_user_id_by_username: {
+        Args: { target_username: string }
+        Returns: string
       }
     }
     Enums: {
+      chat_type: "DIRECT" | "GROUP" | "SELF"
       user_friend_status: "REQ_UID1" | "REQ_UID2" | "APPROVED"
     }
     CompositeTypes: {
@@ -234,6 +293,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      chat_type: ["DIRECT", "GROUP", "SELF"],
       user_friend_status: ["REQ_UID1", "REQ_UID2", "APPROVED"],
     },
   },

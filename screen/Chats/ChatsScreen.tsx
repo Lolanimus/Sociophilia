@@ -2,8 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ChatScreen(){
-  const {id} = useLocalSearchParams();
-
+  const { id } = useLocalSearchParams();
  
   return (
     <View style={styles.container}>
