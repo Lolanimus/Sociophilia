@@ -51,6 +51,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "react-native-logs": "^5.5.0",
+    "supabase": "^2.45.5",
     "typescript": "~5.9.2"
   },
   "private": true
