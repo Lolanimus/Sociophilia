@@ -1,31 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import React, { use } from 'react';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import React, { use, useEffect } from "react";
 
-import { AuthContext, AuthProvider } from '@/contexts/AuthContext';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { Stack } from 'expo-router';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Stack } from "expo-router";
+import { useAuth } from "@/hooks/useAuth";
+import log from "@/utils/logger";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { isLoggedIn } = use(AuthContext);
+  const isAuthenticated = !!useAuth().isAuthenticated;
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          { !isLoggedIn ? 
-            <Stack screenOptions={{
-              headerShown: false
-            }}>
-              <Stack.Screen name="(authentication)" />
-            </Stack>
-            :
-            <Stack screenOptions={{
-              headerShown: false,
-            }}>
-              <Stack.Screen name="(protected)" />
-            </Stack>
-          }
-      </ThemeProvider>
-    </AuthProvider>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="(authentication)" />
+        </Stack.Protected>
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(protected)" />
+        </Stack.Protected>
+      </Stack>
+    </ThemeProvider>
   );
 }
