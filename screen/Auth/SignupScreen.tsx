@@ -1,6 +1,7 @@
 import { signup } from "@/api/auth";
 import { useError, useErrorActions } from "@/states_store/errorStore";
-import { use, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function SignupScreen() {
@@ -12,14 +13,20 @@ export default function SignupScreen() {
     process.env.EXPO_PUBLIC_LOGIN_USERNAME || ""
   );
   const [submitted, setSubmitted] = useState(false);
-
+  const queryClient = useQueryClient();
   const error = useError();
   const { setError } = useErrorActions();
+
+  const handleSignUp = async () => {
+    await signup({ email, password, username });
+    queryClient.invalidateQueries();
+    if (!error) setSubmitted(true);
+  };
 
   useEffect(() => {
     setError(null);
     setSubmitted(false);
-  }, [username, email, password, setError, setSubmitted]);
+  }, [username, email, password]);
 
   return (
     <View style={styles.container}>
@@ -38,20 +45,13 @@ export default function SignupScreen() {
         value={password}
         onChangeText={setPassword}
       />
-      <Button
-        title="Submit"
-        onPress={async () => {
-          await signup({ email, username, password });
-          if (!error) setSubmitted(true);
-        }}
-      />
+      <Button title="Submit" onPress={handleSignUp} />
       {error ? (
         <>
           <Text style={styles.error}>{error}</Text>
           <Text style={styles.error}>Plese try again.</Text>
         </>
-      ) : null}
-      {submitted ? (
+      ) : submitted ? (
         <>
           <Text style={styles.successLabel}>Successfully Signed Up!</Text>
           <Text style={styles.successLabel}>Confirm you email</Text>

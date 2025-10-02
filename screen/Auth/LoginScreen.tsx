@@ -1,5 +1,6 @@
 import { login } from "@/api/auth";
 import { useError, useErrorActions } from "@/states_store/errorStore";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
@@ -12,15 +13,17 @@ export default function LoginScreen() {
   const error = useError();
   const { setError } = useErrorActions();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const submitEvent = async () => {
     await login({ email, password });
+    queryClient.invalidateQueries();
     if (!error) router.navigate("/(protected)/(contacts)/list");
   };
 
   useEffect(() => {
     setError(null);
-  }, [email, password]);
+  }, []);
 
   return (
     <View style={styles.container}>

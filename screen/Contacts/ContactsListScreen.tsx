@@ -1,7 +1,12 @@
-import { logout } from "@/api/auth";
-import { ContactsContext } from "@/contexts/ContactsContext";
+import { signout } from "@/api/auth";
+import { useChats } from "@/hooks/useChats";
+import {
+  useApproveContact,
+  useContacts,
+  useDeleteContact,
+} from "@/hooks/useContacts";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "expo-router";
-import { use, useEffect } from "react";
 import {
   Button,
   FlatList,
@@ -12,40 +17,42 @@ import {
 } from "react-native";
 
 export default function ContactsListScreen() {
-  const {
-    fetchContacts,
-    data,
-    meta,
-    deleteContact,
-    approveContact,
-    pressContact,
-  } = use(ContactsContext);
-
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: contacts } = useContacts();
+  useChats();
+  const approveContactMutation = useApproveContact();
+  const deleteContactMutation = useDeleteContact();
+
   const signOutEvent = async () => {
-    await logout();
-    router.replace("/(authentication)/login");
+    await signout();
+    queryClient.clear();
+    router.navigate("/(authentication)/login");
   };
 
-  // Only fetch contacts once when this screen first loads
-  useEffect(() => {
-    fetchContacts();
-  }, []);
+  const redirectToChat = (user_id: string) => {
+    router.navigate({
+      pathname: "/(protected)/(chats)/[id]",
+      params: { id: user_id },
+    });
+  };
 
   return (
     <View style={styles.container}>
       <View>
-        {data ? (
+        {contacts?.data ? (
           <>
             <Text style={styles.label}>
-              Total Contacts: {meta!.total_contacts}
+              Total Contacts: {contacts?.meta!.total_contacts}
             </Text>
             <FlatList
-              data={data}
+              data={contacts.data}
               keyExtractor={(item) => item.username}
               renderItem={({ item }) => (
                 <View style={styles.contactItem}>
-                  <TouchableOpacity onPress={() => pressContact(item)}>
+                  <TouchableOpacity
+                    onPress={() => redirectToChat(item.user_id)}
+                  >
                     <Text style={styles.label}>{item.username}</Text>
                   </TouchableOpacity>
                   <Text style={styles.label}>{item.status}</Text>
@@ -53,14 +60,18 @@ export default function ContactsListScreen() {
                   item.status !== "APPROVED" ? (
                     <TouchableOpacity
                       style={styles.deleteButton}
-                      onPress={async () => await approveContact(item.username)}
+                      onPress={async () =>
+                        approveContactMutation.mutate(item.user_id)
+                      }
                     >
                       <Text style={styles.acceptText}>✓</Text>
                     </TouchableOpacity>
                   ) : null}
                   <TouchableOpacity
                     style={styles.deleteButton}
-                    onPress={async () => await deleteContact(item.username)}
+                    onPress={async () =>
+                      deleteContactMutation.mutate(item.user_id)
+                    }
                   >
                     <Text style={styles.deleteText}>X</Text>
                   </TouchableOpacity>

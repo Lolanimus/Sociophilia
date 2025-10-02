@@ -1,19 +1,16 @@
-import log from "@/utils/logger";
-import { supabase } from "@/utils/supabase";
-import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+import { useEffect } from "react";
+import supabase from "@/utils/supabase";
+import { userStore } from "@/states_store/userState";
+import { queryClient } from "@/queries/queries";
 
+export const useAuth = () => {
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      setLoading(false);
+      userStore.getState().actions.setUser(session?.user ?? null);
     };
 
     getSession();
@@ -22,29 +19,51 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state change:", event, session?.user?.id);
-      setUser(session?.user ?? null);
-      log.info("User: ", user);
-      setLoading(false);
+      const newUser = session?.user ?? null;
+      const currentUser = userStore.getState().user;
+
+      // If user changed, clear all queries
+      if (currentUser?.id !== newUser?.id) {
+        queryClient.clear();
+      }
+
+      userStore.getState().actions.setUser(newUser);
     });
 
     return () => subscription?.unsubscribe();
   }, []);
+};
 
-  const signOut = async () => {
-    console.log("Signing out...");
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.log("Sign out error:", error);
-    } else {
-      console.log("Sign out successful");
-    }
-  };
+// export const useSignOut = () => {
+//   const queryClient = useQueryClient();
 
-  return {
-    user,
-    loading,
-    signOut,
-    isAuthenticated: !!user,
-  };
-}
+//   return useMutation({
+//     onMutate: () => signout(),
+//     onSuccess: () => {
+//       queryClient.clear();
+//     },
+//   });
+// };
+
+// export const useLogin = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     onMutate: (creds: z.infer<typeof UserLoginCreds>) => login(creds),
+//     onSuccess: () => {
+//       log.info(userStore.getState().user);
+//       queryClient.invalidateQueries();
+//     },
+//   });
+// };
+
+// export const useSignup = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     onMutate: (creds: z.infer<typeof UserSignUpCreds>) => signup(creds),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries();
+//     },
+//   });
+// };

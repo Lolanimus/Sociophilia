@@ -1,4 +1,4 @@
-import { Enums } from "./database.types";
+import { Enums } from "./database-generated.types";
 
 // user_contact return types
 
@@ -9,9 +9,10 @@ interface ContactsMeta {
 }
 
 interface ContactsData {
+  user_id: string;
   username: string;
-  status: Enums<'user_friend_status'>;
-  requester_pos?: Exclude<Enums<'user_friend_status'>, 'APPROVED'>;
+  status: Enums<"user_friend_status">;
+  requester_pos?: Exclude<Enums<"user_friend_status">, "APPROVED">;
   email?: string;
   phone_number?: string;
 }
@@ -21,14 +22,15 @@ interface ContactsResponse {
   data: ContactsData[];
 }
 
-interface Chat{
-  id: string,
-  createdAt: Date;
+interface Chat {
+  id: string;
+  chat_type: Enums<"chat_type">;
+  metadata: JSON;
 }
 
-interface ChatParticipant{
+interface ChatParticipant {
   chatId: string;
   participantId: string;
 }
-export { Chat, ChatParticipant, ContactsData, ContactsMeta, ContactsResponse };
 
+export { Chat, ChatParticipant, ContactsData, ContactsMeta, ContactsResponse };

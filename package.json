@@ -3,13 +3,13 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "sh -c './scripts/set_ip_addr_env_var.sh' && expo start --clear --tunnel",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "update-types": "npx supabase gen types --lang=typescript --project-id \"$PROJECT_REF\" > database.types.ts"
+    "update-types": "npx supabase gen types typescript --local > types/database-generated.types.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^1.0.127",
@@ -42,6 +42,7 @@
     "react-native-async-storage": "^0.0.1",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-get-random-values": "^1.11.0",
+    "react-native-react-query-devtools": "^1.5.1",
     "react-native-reanimated": "~4.1.0",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
@@ -59,6 +60,7 @@
     "prettier": "3.6.2",
     "react-native-logs": "^5.5.0",
     "supabase": "^2.47.2",
+    "type-fest": "^5.0.1",
     "typescript": "~5.9.2"
   },
   "private": true
