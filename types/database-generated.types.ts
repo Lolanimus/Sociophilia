@@ -169,20 +169,8 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: boolean
       }
-      get_client_chat: {
-        Args: { chat_id: string }
-        Returns: Json
-      }
-      get_client_chat_by_user_id: {
-        Args: { target_user_id: string }
-        Returns: Json
-      }
       get_client_chats: {
         Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_contact: {
-        Args: { detail_level?: string; target_user_id: string }
         Returns: Json
       }
       get_contacts: {
@@ -191,6 +179,14 @@ export type Database = {
           page_limit?: number
           page_offset?: number
         }
+        Returns: Json
+      }
+      get_direct_chat: {
+        Args: { target_user_id: string }
+        Returns: Json
+      }
+      get_direct_chat_by_user_id: {
+        Args: { target_user_id: string }
         Returns: Json
       }
       get_user_id_by_username: {

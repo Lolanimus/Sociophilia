@@ -15,6 +15,7 @@ export default function ContactsAddScreen() {
 
   const handleUsernameChange = (username: string) => {
     setUsername(username);
+    setIsSubmitted(false);
     if (error) {
       setError(null);
     }

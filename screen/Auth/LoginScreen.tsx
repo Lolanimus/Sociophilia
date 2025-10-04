@@ -23,7 +23,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     setError(null);
-  }, []);
+  }, [email, password]);
 
   return (
     <View style={styles.container}>

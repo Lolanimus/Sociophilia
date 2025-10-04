@@ -19,20 +19,17 @@ export type Database = MergeDeep<
         delete_contact: {
           Returns: boolean;
         };
-        get_client_chat: {
-          Returns: Chat;
-        };
-        get_client_chat_by_user_id: {
-          Returns: Chat;
-        };
         get_client_chats: {
           Returns: Chat[];
         };
-        get_contact: {
-          Returns: ContactsData;
-        };
         get_contacts: {
           Returns: ContactsResponse;
+        };
+        get_direct_chat: {
+          Returns: Chat;
+        };
+        get_direct_chat_by_user_id: {
+          Returns: Chat;
         };
         get_user_id_by_username: {
           Returns: string;

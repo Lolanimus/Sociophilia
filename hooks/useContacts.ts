@@ -16,12 +16,10 @@ export const useAddContact = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (username: string) => await addContact(username),
-    onSuccess: (setUsername: (i: string) => void) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queries.contacts._def,
       });
-
-      setUsername("");
     },
   });
 };

@@ -6,12 +6,8 @@ export const chats = createQueryKeys("chats", {
     queryKey: null,
     queryFn: () => chatEvents.getClientChats(),
   },
-  detailByChatId: (chatId: string) => ({
-    queryKey: ["chat", chatId],
-    queryFn: () => chatEvents.getClientChat(chatId),
-  }),
   detailByUserId: (userId: string) => ({
     queryKey: ["user", userId],
-    queryFn: () => chatEvents.createDirectChat(userId),
+    queryFn: () => chatEvents.getDirectChatByUserId(userId),
   }),
 });

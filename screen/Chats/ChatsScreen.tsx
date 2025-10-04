@@ -1,9 +1,6 @@
-import { createDirectChat } from "@/dp_rpc/chat_rpc";
-import { useAddChat, useChatByUserId, useChats } from "@/hooks/useChats";
-import { Chat } from "@/types/api.types";
+import { useAddChat, useChatByUserId } from "@/hooks/useChats";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, Button, View } from "react-native";
 
 export default function ChatScreen() {
   const { id }: { id: string } = useLocalSearchParams();
@@ -15,9 +12,19 @@ export default function ChatScreen() {
       <View style={styles.border}>
         <Text style={styles.header}>User Id {id}</Text>
       </View>
-      <TouchableOpacity>
-        <Text style={styles.acceptText}>Chat Id {chat?.id}</Text>
-      </TouchableOpacity>
+      <View>
+        {chat ? (
+          <Text style={styles.acceptText}>Chat Id {chat?.id}</Text>
+        ) : (
+          <View>
+            <Text style={styles.label}>Chat doesn't exist yet...</Text>
+            <Button
+              onPress={() => addChatMutation.mutate(id)}
+              title={"Create Chat"}
+            />
+          </View>
+        )}
+      </View>
     </View>
   );
 }

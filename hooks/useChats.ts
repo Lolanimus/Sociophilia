@@ -19,7 +19,9 @@ export const useAddChat = () => {
   return useMutation({
     mutationFn: async (userId: string) => await createDirectChat(userId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ ...queries.chats.list });
+      queryClient.invalidateQueries({
+        queryKey: queries.chats._def,
+      });
     },
   });
 };
