@@ -1,4 +1,5 @@
 import { signout } from "@/api/auth";
+import { useBroadcastContactsSubscription } from "@/hooks/realtime_broadcast/useRealtimeSuscriptionsFactory";
 import { useChats } from "@/hooks/useChats";
 import {
   useApproveContact,
@@ -20,9 +21,10 @@ export default function ContactsListScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: contacts } = useContacts();
-  useChats();
   const approveContactMutation = useApproveContact();
   const deleteContactMutation = useDeleteContact();
+  useChats();
+  useBroadcastContactsSubscription();
 
   const signOutEvent = async () => {
     await signout();

@@ -7,9 +7,11 @@ import {
 } from "@/dp_rpc/contact_rpc";
 
 export const useContacts = () => {
-  return useQuery({
+  const query = useQuery({
     ...queries.contacts.list,
   });
+
+  return query;
 };
 
 export const useAddContact = () => {

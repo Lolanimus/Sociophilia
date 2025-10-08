@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "sh -c './scripts/set_ip_addr_env_var.sh' && expo start --clear --tunnel",
+    "start-prod": "NODE_ENV=production && expo start --clear --tunnel",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",

@@ -10,9 +10,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { useUser } from "@/states_store/userState";
 import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/queries/queries";
+import { useBroadcastContactsSubscription } from "@/hooks/realtime_broadcast/useRealtimeSuscriptionsFactory";
 
 export default function RootLayout() {
   useAuth();
+
   const colorScheme = useColorScheme();
   const isAuth = !!useUser();
   // Define your copy function based on your platform

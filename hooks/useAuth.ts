@@ -30,7 +30,10 @@ export const useAuth = () => {
       userStore.getState().actions.setUser(newUser);
     });
 
-    return () => subscription?.unsubscribe();
+    return () => {
+      subscription?.unsubscribe();
+      userStore.getState().actions.setUser(null);
+    };
   }, []);
 };
 
