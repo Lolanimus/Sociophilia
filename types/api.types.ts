@@ -33,4 +33,26 @@ interface ChatParticipant {
   participantId: string;
 }
 
-export { Chat, ChatParticipant, ContactsData, ContactsMeta, ContactsResponse };
+interface Message {
+  id: string;
+  sender_id: string;
+  chat_id: string;
+  contents: string;
+  created_at: Date;
+  metadata: JSON;
+}
+
+interface Messages {
+  messages: Message[];
+  nextCursor: number | null;
+}
+
+export {
+  Message,
+  Messages,
+  Chat,
+  ChatParticipant,
+  ContactsData,
+  ContactsMeta,
+  ContactsResponse,
+};

@@ -15,6 +15,7 @@ export default function ProtectedLayout() {
       }}
     >
       <Stack.Screen name="(contacts)" />
+      <Stack.Screen name="(chats)" />
     </Stack>
   );
 }

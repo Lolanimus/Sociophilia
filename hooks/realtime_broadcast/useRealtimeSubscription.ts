@@ -1,8 +1,8 @@
-import { queryClient } from "@/queries/queries";
+import { queries, queryClient } from "@/queries/queries";
 import { userStore } from "@/states_store/userState";
 import log from "@/utils/logger";
 import supabase from "@/utils/supabase";
-import { InvalidateQueryFilters, useQueryClient } from "@tanstack/react-query";
+import { InvalidateQueryFilters } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export enum RealtimeEvents {
@@ -14,19 +14,19 @@ export const useBroadcastSubscription = (
   filter: string,
   queryKey: InvalidateQueryFilters,
   event_name: RealtimeEvents,
-  user_id: string = userStore.getState().user!.id
+  userId: string = userStore.getState().user!.id
 ) => {
   useEffect(() => {
-    supabase.auth.getSession().then((resp) => {
-      supabase.realtime.setAuth(resp?.data?.session?.access_token || null);
+    supabase!.auth.getSession().then((resp) => {
+      supabase!.realtime.setAuth(resp?.data?.session?.access_token || null);
 
-      const channel = supabase.channel(`${user_id}:${filter}`, {
+      const channel = supabase!.channel(`${filter}:${userId}`, {
         config: { private: true },
       });
 
-      if (user_id) {
+      if (userId) {
         channel
-          .on("broadcast", { event: RealtimeEvents.contacts_update }, () => {
+          .on("broadcast", { event: event_name }, () => {
             queryClient.invalidateQueries(queryKey);
             log.info(
               `${userStore.getState().user?.user_metadata.username} has received a message on ${channel.topic}`
@@ -34,17 +34,15 @@ export const useBroadcastSubscription = (
           })
           .subscribe((status) => {
             log.info(
-              `${channel.topic} is ${status} by ${userStore.getState().user?.user_metadata.username}`
+              `topic ${channel.topic} for event ${event_name} is ${status} by ${userStore.getState().user?.user_metadata.username}`
             );
           });
       }
 
       return () => {
         log.info("Cleaning up contact broadcast subsrciption");
-        supabase.removeChannel(channel);
+        supabase!.removeChannel(channel);
       };
     });
-  }, [queryClient, supabase, user_id, queryKey, event_name, filter]);
+  }, [queryClient, supabase, userId, queryKey, event_name, filter]);
 };
-
-export const useBroadcastChatSubscription = () => {};

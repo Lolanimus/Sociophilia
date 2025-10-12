@@ -14,7 +14,6 @@ export async function processAuthRequest<T>(
     const stack: any = {};
     Error.captureStackTrace(stack);
     log.error(err);
-    log.error("Callstack: ", stack.stack);
 
     if (err instanceof z.ZodError)
       errorStore.getState().actions.setError(err.message);

@@ -1,5 +1,6 @@
 import { signup } from "@/api/auth";
 import { useError, useErrorActions } from "@/states_store/errorStore";
+import { styles } from "@/utils/styles";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
@@ -63,30 +64,3 @@ export default function SignupScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-  },
-  label: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "white",
-  },
-  error: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "red",
-    textAlign: "center",
-    marginTop: 8,
-  },
-  successLabel: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "white",
-    textAlign: "center",
-    marginTop: 12,
-  },
-});

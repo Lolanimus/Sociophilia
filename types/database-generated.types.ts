@@ -34,6 +34,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          chat_id: string
+          contents: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          sender_id: string
+        }
+        Insert: {
+          chat_id: string
+          contents: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          sender_id: string
+        }
+        Update: {
+          chat_id?: string
+          contents?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_participants: {
         Row: {
           chat_id: string
@@ -165,8 +207,16 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: Json
       }
+      create_message: {
+        Args: { p_chat_id: string; p_contents: string }
+        Returns: Json
+      }
       delete_contact: {
         Args: { target_user_id: string }
+        Returns: boolean
+      }
+      delete_messages: {
+        Args: { msg_ids: string[] }
         Returns: boolean
       }
       get_client_chats: {
@@ -181,12 +231,12 @@ export type Database = {
         }
         Returns: Json
       }
-      get_direct_chat: {
+      get_direct_chat_by_user_id: {
         Args: { target_user_id: string }
         Returns: Json
       }
-      get_direct_chat_by_user_id: {
-        Args: { target_user_id: string }
+      get_messages: {
+        Args: { p_chat_id: string; p_cursor?: number; p_limit?: number }
         Returns: Json
       }
       get_user_id_by_username: {
@@ -196,6 +246,7 @@ export type Database = {
     }
     Enums: {
       chat_type: "DIRECT" | "GROUP" | "SELF"
+      realtime_events: "contacts_update" | "chats_update"
       user_friend_status: "REQ_UID1" | "REQ_UID2" | "APPROVED"
     }
     CompositeTypes: {
@@ -328,6 +379,7 @@ export const Constants = {
   public: {
     Enums: {
       chat_type: ["DIRECT", "GROUP", "SELF"],
+      realtime_events: ["contacts_update", "chats_update"],
       user_friend_status: ["REQ_UID1", "REQ_UID2", "APPROVED"],
     },
   },

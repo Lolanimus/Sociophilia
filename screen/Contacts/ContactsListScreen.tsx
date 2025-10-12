@@ -6,6 +6,7 @@ import {
   useContacts,
   useDeleteContact,
 } from "@/hooks/useContacts";
+import { styles } from "@/utils/styles";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "expo-router";
 import {
@@ -29,7 +30,7 @@ export default function ContactsListScreen() {
   const signOutEvent = async () => {
     await signout();
     queryClient.clear();
-    router.navigate("/(authentication)/login");
+    router.replace("/login");
   };
 
   const redirectToChat = (user_id: string) => {
@@ -94,52 +95,3 @@ export default function ContactsListScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    height: "100%",
-    width: "100%",
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-    borderColor: "red",
-  },
-  label: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "white",
-  },
-  linkText: {
-    color: "blue",
-    fontSize: 16,
-    textDecorationLine: "underline",
-  },
-  deleteButton: {
-    padding: 8,
-    marginLeft: 10,
-  },
-  deleteText: {
-    color: "#ff4444",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  acceptText: {
-    color: "#44ff63ff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  contactItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-  },
-  error: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "red",
-    textAlign: "center",
-    marginTop: 8,
-  },
-});

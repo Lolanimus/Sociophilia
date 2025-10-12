@@ -1,0 +1,50 @@
+module.exports = {
+  expo: {
+    name: "Sociophilia",
+    slug: "sociophilia",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/images/icon.png",
+    scheme: "sociophilia",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+    },
+    android: {
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/adaptive-icon.png",
+        backgroundColor: "#ffffff",
+      },
+      edgeToEdgeEnabled: true,
+      package: "com.lolanimus.sociophilia",
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#ffffff",
+        },
+      ],
+    ],
+    experiments: {
+      typedRoutes: true,
+    },
+    extra: {
+      router: {},
+      eas: {
+        projectId: "8be155cc-4318-4ab9-97f0-89e7f64b84ff",
+      },
+    },
+    owner: "lolanimus",
+  },
+};

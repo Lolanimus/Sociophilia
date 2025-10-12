@@ -2,15 +2,22 @@ import { useEffect } from "react";
 import supabase from "@/utils/supabase";
 import { userStore } from "@/states_store/userState";
 import { queryClient } from "@/queries/queries";
+import log from "@/utils/logger";
+import { loadingStore } from "@/states_store/loadingState";
 
 export const useAuth = () => {
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      userStore.getState().actions.setUser(session?.user ?? null);
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        userStore.getState().actions.setUser(session?.user ?? null);
+        loadingStore.getState().actions.setLoading(false);
+      } catch (err) {
+        log.error(err);
+      }
     };
 
     getSession();

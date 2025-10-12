@@ -15,7 +15,7 @@ export const useBroadcastContactsSubscription = () => {
 export const useBroadcastChatsSubscription = () => {
   return useBroadcastSubscription(
     "chats",
-    { ...queries.chats.list },
+    { queryKey: queries.chats._def },
     RealtimeEvents.chats_update
   );
 };

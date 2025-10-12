@@ -1,4 +1,10 @@
-import { Chat, ContactsData, ContactsResponse } from "./api.types";
+import {
+  Chat,
+  ContactsData,
+  ContactsResponse,
+  Message,
+  Messages,
+} from "./api.types";
 import { Database as DatabaseGenerated } from "./database-generated.types";
 import { MergeDeep } from "type-fest";
 
@@ -16,7 +22,13 @@ export type Database = MergeDeep<
         create_direct_chat: {
           Returns: Chat;
         };
+        create_message: {
+          Returns: Message;
+        };
         delete_contact: {
+          Returns: boolean;
+        };
+        delete_messages: {
           Returns: boolean;
         };
         get_client_chats: {
@@ -30,6 +42,9 @@ export type Database = MergeDeep<
         };
         get_direct_chat_by_user_id: {
           Returns: Chat;
+        };
+        get_messages: {
+          Returns: Messages;
         };
         get_user_id_by_username: {
           Returns: string;

@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
 import * as aesjs from "aes-js";
 import * as SecureStore from "expo-secure-store";
+import Constants from "expo-constants";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import log from "./logger";
@@ -63,12 +64,24 @@ class LargeSecureStore {
   }
 }
 
-log.info(process.env.EXPO_PUBLIC_SUPABASE_URL!);
+// Get environment variables from expo-constants for runtime access in development builds
+const supabaseUrl =
+  Constants.expoConfig?.extra?.supabaseUrl ||
+  process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey =
+  Constants.expoConfig?.extra?.supabaseAnonKey ||
+  process.env.EXPO_PUBLIC_SUPABASE_KEY!;
 
-export const supabase = createClient(
-  process.env.EXPO_PUBLIC_SUPABASE_URL!,
-  process.env.EXPO_PUBLIC_SUPABASE_KEY!,
-  {
+// Only initialize Supabase client on the client side (not during SSR)
+const createSupabaseClient = () => {
+  // Check if we're in a React Native environment (not Node.js SSR)
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  log.info("Supabase URL:", supabaseUrl);
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       storage: new LargeSecureStore(),
       autoRefreshToken: true,
@@ -76,7 +89,9 @@ export const supabase = createClient(
       detectSessionInUrl: false,
       lock: processLock,
     },
-  }
-);
+  });
+};
+
+export const supabase = createSupabaseClient();
 
 export default supabase;

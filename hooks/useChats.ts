@@ -16,6 +16,7 @@ export const useChatByUserId = (userId: string) => {
 
 export const useAddChat = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (userId: string) => await createDirectChat(userId),
     onSuccess: () => {
