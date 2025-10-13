@@ -4,7 +4,8 @@ module.exports = {
     slug: "sociophilia",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    entryPoint: "./frontend/app/",
+    icon: "./frontend/assets/images/icon.png",
     scheme: "sociophilia",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -13,7 +14,7 @@ module.exports = {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
+        foregroundImage: "./frontend/assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
       edgeToEdgeEnabled: true,
@@ -22,14 +23,14 @@ module.exports = {
     web: {
       bundler: "metro",
       output: "static",
-      favicon: "./assets/images/favicon.png",
+      favicon: "./frontend/assets/images/favicon.png",
     },
     plugins: [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/splash-icon.png",
+          image: "./frontend/assets/images/splash-icon.png",
           imageWidth: 200,
           resizeMode: "contain",
           backgroundColor: "#ffffff",

@@ -1,5 +1,5 @@
-import ChatScreen from "@/screen/Chats/ChatsScreen";
+import ChatScreen from "@/frontend/screen/Chats/ChatsScreen";
 
 export default function Chat() {
-    return <ChatScreen/>
+  return <ChatScreen />;
 }

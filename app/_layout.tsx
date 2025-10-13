@@ -4,13 +4,13 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { DevToolsBubble } from "react-native-react-query-devtools";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useColorScheme } from "@/frontend/hooks/useColorScheme";
 import { Stack, Tabs } from "expo-router";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { useUser } from "@/states_store/userState";
-import { queryClient } from "@/queries/queries";
-import { useLoading } from "@/states_store/loadingState";
-import { useAuth } from "@/hooks/useAuth";
+import { useUser } from "@/frontend/states_store/userState";
+import { queryClient } from "@/frontend/queries/queries";
+import { useLoading } from "@/frontend/states_store/loadingState";
+import { useAuth } from "@/frontend/hooks/useAuth";
 
 export default function Main() {
   useAuth();

@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack } from "expo-router";
-import { queries } from "@/queries/queries";
+import { queries } from "@/frontend/queries/queries";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProtectedLayout() {

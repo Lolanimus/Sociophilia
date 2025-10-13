@@ -1,5 +1,5 @@
-import ContactsAddScreen from "@/screen/Contacts/ContactsAddScreen";
+import ContactsAddScreen from "@/frontend/screen/Contacts/ContactsAddScreen";
 
 export default function ContactsAdd() {
-    return <ContactsAddScreen />;
+  return <ContactsAddScreen />;
 }

@@ -1,6 +1,6 @@
 import { Redirect } from "expo-router";
-import { useUser } from "@/states_store/userState";
-import { useLoading } from "@/states_store/loadingState";
+import { useUser } from "@/frontend/states_store/userState";
+import { useLoading } from "@/frontend/states_store/loadingState";
 import { View, ActivityIndicator } from "react-native";
 
 export default function Index() {
