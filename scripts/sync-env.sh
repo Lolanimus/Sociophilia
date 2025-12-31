@@ -11,7 +11,7 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-TARGET=".env.local"
+TARGET_ENV_FILE=".env"
 if [ "$1" = "local" ]; then
   ENV="development"
 elif [ "$1" = "production" ]; then
@@ -21,11 +21,16 @@ else
   exit 1
 fi
 
+# If .env exists, delete it
+if [ -f "$TARGET_ENV_FILE" ]; then
+  rm "$TARGET_ENV_FILE"
+fi
+
 echo "Pulling environment variables from EAS ($ENV)..."
 eas env:pull $ENV --path .env.eas
 
 if [ $? -eq 0 ]; then
-  echo "Merging with $TARGET..."
+  echo "Merging with $TARGET_ENV_FILE..."
 
   # Create temporary file for merged vars
   TEMP_FILE=$(mktemp)
@@ -34,7 +39,7 @@ if [ $? -eq 0 ]; then
   grep -v '^#' .env.eas | grep -v '^$' > "$TEMP_FILE"
 
   # Add existing local vars that aren't in EAS
-  if [ -f "$TARGET" ]; then
+  if [ -f "$TARGET_ENV_FILE" ]; then
     while IFS='=' read -r key value; do
       # Skip comments and empty lines
       if echo "$key" | grep -qE '^#|^$'; then
@@ -44,25 +49,24 @@ if [ $? -eq 0 ]; then
       if ! grep -q "^${key}=" "$TEMP_FILE"; then
         echo "${key}=${value}" >> "$TEMP_FILE"
       fi
-    done < "$TARGET"
+    done < "$TARGET_ENV_FILE"
   fi
 
-  # Write to target file with header
-  echo "# Environment: $ENV" > "$TARGET"
-  echo "" >> "$TARGET"
-  cat "$TEMP_FILE" >> "$TARGET"
+  # Write to TARGET_ENV_FILE file with header
+  echo "# Environment: $ENV" > "$TARGET_ENV_FILE"
+  echo "" >> "$TARGET_ENV_FILE"
+  cat "$TEMP_FILE" >> "$TARGET_ENV_FILE"
 
   rm "$TEMP_FILE"
   rm .env.eas
 
   # Add IP address for local environment after merge
   if [ "$1" = "local" ]; then
-    bash ./scripts/set_ip_addr_env_var.sh
+    node ./scripts/set-ip-env.mjs
   fi
 
   # Copy the environment-specific file to .env for Expo to use
-  cp "$TARGET" .env
-  echo "✅ Successfully synced to $TARGET and copied to .env"
+  echo "✅ Successfully synced to $TARGET_ENV_FILE"
 else
   echo "❌ Failed to pull from EAS"
   exit 1

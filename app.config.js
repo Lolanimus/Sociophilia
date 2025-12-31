@@ -10,6 +10,7 @@ module.exports = {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
+      bundleIdentifier: "com.lolanimus.sociophilia",
     },
     android: {
       adaptiveIcon: {
@@ -35,6 +36,8 @@ module.exports = {
           backgroundColor: "#ffffff",
         },
       ],
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     experiments: {
       typedRoutes: true,
