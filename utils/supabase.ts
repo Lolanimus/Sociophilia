@@ -1,11 +1,45 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
 import * as aesjs from "aes-js";
-import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
+import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import log from "./logger";
+
+// Platform-aware storage adapter: AsyncStorage for web, SecureStore for mobile
+class PlatformSecureStore {
+  private largeSecureStore: LargeSecureStore;
+
+  constructor() {
+    this.largeSecureStore = new LargeSecureStore();
+  }
+
+  async getItem(key: string): Promise<string | null> {
+    if (Platform.OS === 'web') {
+      return await AsyncStorage.getItem(key);
+    } else {
+      return await this.largeSecureStore.getItem(key);
+    }
+  }
+
+  async setItem(key: string, value: string): Promise<void> {
+    if (Platform.OS === 'web') {
+      await AsyncStorage.setItem(key, value);
+    } else {
+      await this.largeSecureStore.setItem(key, value);
+    }
+  }
+
+  async removeItem(key: string): Promise<void> {
+    if (Platform.OS === 'web') {
+      await AsyncStorage.removeItem(key);
+    } else {
+      await this.largeSecureStore.removeItem(key);
+    }
+  }
+}
 
 // As Expo's SecureStore does not support values larger than 2048
 // bytes, an AES-256 key is generated and stored in SecureStore, while
@@ -83,7 +117,7 @@ const createSupabaseClient = () => {
 
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
-      storage: new LargeSecureStore(),
+      storage: new PlatformSecureStore(),
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
