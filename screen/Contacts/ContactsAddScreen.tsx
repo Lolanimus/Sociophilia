@@ -1,9 +1,9 @@
-import { useBroadcastChatsSubscription } from "@/hooks/realtime_broadcast/useRealtimeSuscriptionsFactory";
 import { useAddContact } from "@/hooks/useContacts";
 import { useError, useErrorActions } from "@/states_store/errorStore";
-import { styles } from "@/utils/styles";
+import { useStyles } from "@/utils/styles";
+import { Button } from "@react-navigation/elements";
 import { useEffect, useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 export default function ContactsAddScreen() {
   const [username, setUsername] = useState("");
@@ -12,7 +12,8 @@ export default function ContactsAddScreen() {
   const error = useError();
   const { setError } = useErrorActions();
   const addContactMutation = useAddContact();
-
+  const styles = useStyles();
+  
   const handleUsernameChange = (username: string) => {
     setUsername(username);
     setIsSubmitted(false);
@@ -33,14 +34,18 @@ export default function ContactsAddScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Username</Text>
-      <TextInput
-        value={username}
-        onChangeText={handleUsernameChange}
-        style={styles.textInput}
-      />
-      <Button onPress={async () => await handleSubmit()} title="Add Contact" />
+    <View style={[styles.container, {display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%'}]}>
+      <View style={styles.containerInner}>
+        <Text style={styles.label}>Username</Text>
+        <TextInput
+          value={username}
+          onChangeText={handleUsernameChange}
+          style={styles.textInput}
+        />
+      </View>
+      <View style={styles.containerInner}>
+        <Button onPress={async () => await handleSubmit()} style={styles.button}>Add Contact</Button>
+      </View>
       {error ? (
         <>
           <Text style={styles.error}>{error}</Text>

@@ -1,9 +1,11 @@
 import { useError } from "@/states_store/errorStore";
-import { styles } from "@/utils/styles";
+import { useStyles } from "@/utils/styles";
 import { Text } from "@react-navigation/elements";
 
 export default function ErrorOnSubmit(props: { isSubmitted: boolean }) {
   const error = useError();
+  const styles = useStyles();
+  
   if (error) {
     return (
       <>

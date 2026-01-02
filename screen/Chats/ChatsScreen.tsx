@@ -1,21 +1,21 @@
+import ErrorOnSubmit from "@/components/ErrorOnSubmit";
+import { useBroadcastChatsSubscription } from "@/hooks/realtime_broadcast/useRealtimeSuscriptionsFactory";
 import { useChatByUserId } from "@/hooks/useChats";
 import {
   useInfiniteMessages,
-  useMessages,
-  useSendMessage,
+  useSendMessage
 } from "@/hooks/useMessages";
-import MessageComponent from "../../components/Message";
-import { useLocalSearchParams } from "expo-router";
-import { Text, Button, View, TextInput, FlatList } from "react-native";
-import { useEffect, useState } from "react";
 import { useErrorActions } from "@/states_store/errorStore";
-import { styles } from "@/utils/styles";
-import ErrorOnSubmit from "@/components/ErrorOnSubmit";
-import { useBroadcastChatsSubscription } from "@/hooks/realtime_broadcast/useRealtimeSuscriptionsFactory";
+import { useStyles } from "@/utils/styles";
+import { Button } from "@react-navigation/elements";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { FlatList, Text, TextInput, View } from "react-native";
+import MessageComponent from "../../components/Message";
 
 export default function ChatScreen() {
   const cursorLimit = 10;
-
+  const styles = useStyles();
   const [message, setMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { id }: { id: string } = useLocalSearchParams();
@@ -62,11 +62,11 @@ export default function ChatScreen() {
       />
       <View>
         <TextInput
-          style={styles.label}
+          style={[styles.textInput, {marginBottom: 8, marginTop: 8 }]}
           onChangeText={setMessage}
           value={message}
         />
-        <Button title="send" onPress={submitMsg} />
+        <Button onPress={submitMsg} style={styles.button}>Send</Button>
       </View>
       <ErrorOnSubmit isSubmitted={isSubmitted} />
     </View>

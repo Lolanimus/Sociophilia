@@ -3,7 +3,11 @@ import React from "react";
 
 export default function ContactsLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerShown: true,
+      }}
+    >
       <Stack.Screen
         name="[id]"
         options={({ route }: { route: any }) => ({

@@ -8,17 +8,37 @@ import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import log from "./logger";
 
+// Get session namespace from URL parameter (for iframe-based split view on web)
+const getSessionNamespace = (): string => {
+  if (typeof window === "undefined" || Platform.OS !== "web") {
+    return "default";
+  }
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get("session") || "default";
+};
+
 // Platform-aware storage adapter: AsyncStorage for web, SecureStore for mobile
 class PlatformSecureStore {
   private largeSecureStore: LargeSecureStore;
+  private namespace: string;
 
   constructor() {
     this.largeSecureStore = new LargeSecureStore();
+    // On web, use namespace from URL for split view support
+    this.namespace = Platform.OS === "web" ? getSessionNamespace() : "default";
+  }
+
+  private getKey(key: string): string {
+    // Only namespace on web for split view
+    if (Platform.OS === "web" && this.namespace !== "default") {
+      return `${this.namespace}:${key}`;
+    }
+    return key;
   }
 
   async getItem(key: string): Promise<string | null> {
     if (Platform.OS === 'web') {
-      return await AsyncStorage.getItem(key);
+      return await AsyncStorage.getItem(this.getKey(key));
     } else {
       return await this.largeSecureStore.getItem(key);
     }
@@ -26,7 +46,7 @@ class PlatformSecureStore {
 
   async setItem(key: string, value: string): Promise<void> {
     if (Platform.OS === 'web') {
-      await AsyncStorage.setItem(key, value);
+      await AsyncStorage.setItem(this.getKey(key), value);
     } else {
       await this.largeSecureStore.setItem(key, value);
     }
@@ -34,7 +54,7 @@ class PlatformSecureStore {
 
   async removeItem(key: string): Promise<void> {
     if (Platform.OS === 'web') {
-      await AsyncStorage.removeItem(key);
+      await AsyncStorage.removeItem(this.getKey(key));
     } else {
       await this.largeSecureStore.removeItem(key);
     }

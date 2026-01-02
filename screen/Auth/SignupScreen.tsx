@@ -1,9 +1,10 @@
 import { signup } from "@/api/auth";
 import { useError, useErrorActions } from "@/states_store/errorStore";
-import { styles } from "@/utils/styles";
+import { useStyles } from "@/utils/styles";
+import { Button } from "@react-navigation/elements";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 export default function SignupScreen() {
   const [password, setPassword] = useState(
@@ -17,6 +18,7 @@ export default function SignupScreen() {
   const queryClient = useQueryClient();
   const error = useError();
   const { setError } = useErrorActions();
+  const styles = useStyles();
 
   const handleSignUp = async () => {
     await signup({ email, password, username });
@@ -31,22 +33,23 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>Signup</Text>
-      <Text style={styles.label}>Username</Text>
-      <TextInput
-        style={styles.label}
-        value={username}
-        onChangeText={setUsername}
-      />
-      <Text style={styles.label}>Email</Text>
-      <TextInput style={styles.label} value={email} onChangeText={setEmail} />
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.label}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button title="Submit" onPress={handleSignUp} />
+      <View style={styles.containerInner}>
+        <Text style={styles.label}>Username</Text>
+        <TextInput
+          style={styles.textInput}
+          value={username}
+          onChangeText={setUsername}
+        />
+      </View>
+      <View style={styles.containerInner}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput style={styles.textInput} value={email} onChangeText={setEmail} />
+      </View>
+      <View style={styles.containerInner}>
+        <Text style={styles.label}>Password</Text>
+        <TextInput style={styles.textInput} value={password} onChangeText={setPassword} />
+      </View>
+      <Button onPress={handleSignUp} style={styles.button}>Submit</Button>
       {error ? (
         <>
           <Text style={styles.error}>{error}</Text>

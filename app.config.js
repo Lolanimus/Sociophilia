@@ -8,7 +8,8 @@ module.exports = {
     scheme: "sociophilia",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
-    ios: {
+    ios: {      
+      UIDesignRequiresCompatibility: true,
       supportsTablet: true,
       bundleIdentifier: "com.lolanimus.sociophilia",
     },

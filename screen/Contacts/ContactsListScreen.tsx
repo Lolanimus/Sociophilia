@@ -6,16 +6,15 @@ import {
   useContacts,
   useDeleteContact,
 } from "@/hooks/useContacts";
-import { styles } from "@/utils/styles";
+import { useStyles } from "@/utils/styles";
+import { Button } from "@react-navigation/elements";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
-  Button,
   FlatList,
-  StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 export default function ContactsListScreen() {
@@ -26,6 +25,7 @@ export default function ContactsListScreen() {
   const deleteContactMutation = useDeleteContact();
   useChats();
   useBroadcastContactsSubscription();
+  const styles = useStyles();
 
   const signOutEvent = async () => {
     await signout();
@@ -34,7 +34,7 @@ export default function ContactsListScreen() {
   };
 
   const redirectToChat = (user_id: string) => {
-    router.navigate({
+    router.push({
       pathname: "/(protected)/(chats)/[id]",
       params: { id: user_id },
     });
@@ -42,7 +42,7 @@ export default function ContactsListScreen() {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={[{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%'}]}>
         {contacts?.data ? (
           <>
             <Text style={styles.label}>
@@ -52,7 +52,7 @@ export default function ContactsListScreen() {
               data={contacts.data}
               keyExtractor={(item) => item.username}
               renderItem={({ item }) => (
-                <View style={styles.contactItem}>
+                <View style={styles.item}>
                   <TouchableOpacity
                     onPress={() => redirectToChat(item.user_id)}
                   >
@@ -86,11 +86,13 @@ export default function ContactsListScreen() {
           <Text>No contacts yet</Text>
         )}
 
-        <Button onPress={signOutEvent} title="Sign Out" />
+        <View style={styles.containerInner}>
+            <Button onPress={signOutEvent} style={styles.button}>Sign Out</Button>
+            <Button onPress={() => router.push("/(protected)/(contacts)/add")} style={styles.button}>
+              Add a new contact
+            </Button>
+        </View>
 
-        <Link href={"/(protected)/(contacts)/add"} style={styles.linkText}>
-          Add a new contact
-        </Link>
       </View>
     </View>
   );

@@ -1,16 +1,18 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { queryClient } from "@/queries/queries";
+import { useLoading } from "@/states_store/loadingState";
+import { useUser } from "@/states_store/userState";
+import Clipboard from "@react-native-clipboard/clipboard";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { DevToolsBubble } from "react-native-react-query-devtools";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Stack, Tabs } from "expo-router";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { useUser } from "@/states_store/userState";
-import { queryClient } from "@/queries/queries";
-import { useLoading } from "@/states_store/loadingState";
-import { useAuth } from "@/hooks/useAuth";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { DevToolsBubble } from "react-native-react-query-devtools";
 
 export default function Main() {
   useAuth();
@@ -21,17 +23,25 @@ export default function Main() {
   // Define your copy function based on your platform
   const onCopy = async (text: string) => {
     try {
-      await new Clipboard().writeText(text);
+      await Clipboard.setString(text);
       return true;
     } catch {
       return false;
     }
   };
 
+  const theme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
+
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <ThemeProvider value={theme}>
+        <Stack 
+          screenOptions={{ 
+            headerShown: false,
+            contentStyle: { backgroundColor: theme.colors.background }
+          }}
+        >
           <Stack.Protected guard={!!user}>
             <Stack.Screen
               name="(protected)"

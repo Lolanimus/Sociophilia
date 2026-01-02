@@ -1,9 +1,13 @@
-import React from "react";
 import { Stack } from "expo-router";
+import React from "react";
 
 export default function ContactsLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerShown: true,
+      }}
+    >
       <Stack.Screen name="list" options={{ title: "Contacts List" }} />
       <Stack.Screen name="add" options={{ title: "Add a new Contact" }} />
     </Stack>
