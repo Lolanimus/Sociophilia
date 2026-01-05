@@ -8,6 +8,12 @@ module.exports = {
     scheme: "sociophilia",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    updates: {
+      url: "https://u.expo.dev/8be155cc-4318-4ab9-97f0-89e7f64b84ff",
+    },
+    runtimeVersion: {
+      policy: "appVersion"
+    },
     ios: {      
       UIDesignRequiresCompatibility: true,
       supportsTablet: true,
