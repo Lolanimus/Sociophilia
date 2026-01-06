@@ -119,12 +119,8 @@ class LargeSecureStore {
 }
 
 // Get environment variables from expo-constants for runtime access in development builds
-const supabaseUrl =
-  Constants.expoConfig?.extra?.supabaseUrl ||
-  process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey =
-  Constants.expoConfig?.extra?.supabaseAnonKey ||
-  process.env.EXPO_PUBLIC_SUPABASE_KEY!;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
 
 // Only initialize Supabase client on the client side (not during SSR)
 const createSupabaseClient = () => {
