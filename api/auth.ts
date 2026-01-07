@@ -45,6 +45,8 @@ const signout = async (): Promise<void> => {
   userStore.getState().actions.setUser(null);
 };
 
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+
 const signup = async (
   creds: z.infer<typeof UserSignUpCreds>
 ): Promise<User | null> => {
@@ -56,6 +58,7 @@ const signup = async (
         data: {
           username: creds.username,
         },
+        emailRedirectTo: supabaseUrl,
       },
     });
 
