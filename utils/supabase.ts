@@ -129,8 +129,6 @@ const createSupabaseClient = () => {
     return null;
   }
 
-  log.info("Supabase URL:", supabaseUrl);
-
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       storage: new PlatformSecureStore(),
