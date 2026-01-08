@@ -19,9 +19,16 @@ export default function LoginScreen() {
   const styles = useStyles();
 
   const submitEvent = async () => {
-    await login({ email, password });
-    queryClient.invalidateQueries();
-    if (!error) router.navigate("/(protected)/(contacts)/list");
+    // Clear any previous error before attempting login
+    setError(null);
+
+    const user = await login({ email, password });
+    await queryClient.invalidateQueries();
+
+    // Navigate only if login returned a user (ignore stale error state)
+    if (user) {
+      router.replace("/(protected)/(contacts)/list");
+    }
   };
 
   useEffect(() => {

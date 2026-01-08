@@ -19,7 +19,7 @@ const login = async (
   creds: z.infer<typeof UserLoginCreds>
 ): Promise<User | null> => {
   const user = await processAuthRequest(async () => {
-    const { data, error } = await supabase.auth.signInWithPassword(creds);
+    const { data, error } = await supabase!.auth.signInWithPassword(creds);
 
     if (error) throw error;
 
@@ -35,7 +35,7 @@ const login = async (
 
 const signout = async (): Promise<void> => {
   processAuthRequest(async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase!.auth.signOut();
 
     if (error) throw error;
 
@@ -51,14 +51,20 @@ const signup = async (
   creds: z.infer<typeof UserSignUpCreds>
 ): Promise<User | null> => {
   const user = await processAuthRequest(async () => {
-    const { data, error } = await supabase.auth.signUp({
+    // Prefer redirecting back to the current app origin on web
+    const emailRedirectTo =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : process.env.EXPO_PUBLIC_SITE_URL || supabaseUrl;
+
+    const { data, error } = await supabase!.auth.signUp({
       email: creds.email,
       password: creds.password,
       options: {
         data: {
           username: creds.username,
         },
-        emailRedirectTo: supabaseUrl,
+        emailRedirectTo,
       },
     });
 

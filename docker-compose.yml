@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: sociophilia_web_prod.dockerfile
+    container_name: sociophilia-web
+    ports:
+      - "8080:80"
+    restart: unless-stopped
