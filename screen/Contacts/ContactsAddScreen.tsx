@@ -44,18 +44,18 @@ export default function ContactsAddScreen() {
         />
       </View>
       <View style={styles.containerInner}>
+        {error ? (
+          <>
+            <Text style={styles.error}>{error}</Text>
+            <Text style={styles.error}>Plese try again.</Text>
+          </>
+        ) : isSubmitted ? (
+          <>
+            <Text style={[styles.label, {textAlign: 'center'}]}>Success</Text>
+          </>
+        ) : null}
         <Button onPress={async () => await handleSubmit()} style={styles.button}>Add Contact</Button>
       </View>
-      {error ? (
-        <>
-          <Text style={styles.error}>{error}</Text>
-          <Text style={styles.error}>Plese try again.</Text>
-        </>
-      ) : isSubmitted ? (
-        <>
-          <Text style={styles.label}>Success</Text>
-        </>
-      ) : null}
     </View>
   );
 }
