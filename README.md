@@ -1,6 +1,6 @@
 # Sociophilia - Web/Android/iOS Messenger App
 
-**URL: [sociophilia.artemmelnikov.com](sociophilia.artemmelnikov.com)**
+**URL: [sociophilia.artemmelnikov.com](https://sociophilia.artemmelnikov.com)**
 
 ### If you have Expo Go on your phone, you can scan this QR Code and check the mobile version of this app:
 <div align="center">
