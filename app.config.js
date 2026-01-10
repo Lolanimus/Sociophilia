@@ -12,7 +12,7 @@ module.exports = {
       url: "https://u.expo.dev/8be155cc-4318-4ab9-97f0-89e7f64b84ff",
     },
     runtimeVersion: {
-      policy: "appVersion"
+      policy: "sdkVersion"
     },
     ios: {      
       UIDesignRequiresCompatibility: true,
