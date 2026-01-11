@@ -3,7 +3,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { queryClient } from "@/queries/queries";
 import { useLoading } from "@/states_store/loadingState";
 import { useUser } from "@/states_store/userState";
-import * as Clipboard from 'expo-clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {
   DarkTheme,
   DefaultTheme,

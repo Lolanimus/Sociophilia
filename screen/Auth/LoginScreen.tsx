@@ -3,7 +3,7 @@ import { useError, useErrorActions } from "@/states_store/errorStore";
 import { useStyles } from "@/utils/styles";
 import { Button } from "@react-navigation/elements";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
@@ -49,13 +49,19 @@ export default function LoginScreen() {
           style={styles.textInput}
         />
       </View>
-      <Button onPress={submitEvent} style={styles.button}>Submit</Button>
-      {error ? (
-        <>
-          <Text style={styles.error}>{error}</Text>
-          <Text style={styles.error}>Plese try again.</Text>
-        </>
-      ) : null}
+      <View style={styles.containerInner}>
+        {error ? (
+          <>
+            <Text style={styles.error}>{error}</Text>
+            <Text style={styles.error}>Plese try again.</Text>
+          </>
+        ) : null}
+        <Button onPress={submitEvent} style={styles.button}>Submit</Button>
+      </View>
+      <View style={[styles.containerInner, { alignItems: 'center' }]}>
+        <Link href="https://artemmelnikov.com/sociophilia-privacy-policy/" style={styles.linkText}>Privacy Policy</Link>
+      </View>
+
     </View>
   );
 }
