@@ -26,6 +26,20 @@ if [ -f "$TARGET_ENV_FILE" ]; then
   rm "$TARGET_ENV_FILE"
 fi
 
+if [ "$1" = "production" ]; then
+  # Create or overwrite .env file
+  cat > "$TARGET_ENV_FILE" << EOF
+  EXPO_PUBLIC_SUPABASE_URL=$EXPO_PUBLIC_SUPABASE_URL
+  EXPO_PUBLIC_SUPABASE_KEY=$EXPO_PUBLIC_SUPABASE_KEY
+EOF
+
+  echo "✅ Successfully synced to $TARGET_ENV_FILE"
+  echo "EXPO_PUBLIC_SUPABASE_URL=$EXPO_PUBLIC_SUPABASE_URL"
+  echo "EXPO_PUBLIC_SUPABASE_KEY=$EXPO_PUBLIC_SUPABASE_KEY"
+  
+  exit 0
+fi
+
 echo "Pulling environment variables from EAS ($ENV)..."
 eas env:pull $ENV --path .env.eas
 

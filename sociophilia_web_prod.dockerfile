@@ -2,6 +2,7 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY . .
+RUN bash ./scripts/sync-env.sh production
 RUN npm install && npx expo export -p web
 
 # Production Stage
