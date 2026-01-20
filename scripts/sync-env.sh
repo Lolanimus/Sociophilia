@@ -7,8 +7,8 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 if [ -z "$1" ]; then
-  echo "Usage: ./sync-env.sh [local|production]"
-  exit 1
+  echo "Usage: ./sync-env.sh [local|production|local-prod]"
+  return 1
 fi
 
 TARGET_ENV_FILE=".env"
@@ -16,9 +16,11 @@ if [ "$1" = "local" ]; then
   ENV="development"
 elif [ "$1" = "production" ]; then
   ENV="production"
+elif [ "$1" = "local-prod" ]; then
+  ENV="production"
 else
   echo "Invalid argument. Use 'local' or 'production'"
-  exit 1
+  return 1
 fi
 
 # If .env exists, delete it
@@ -36,8 +38,8 @@ EOF
   echo "✅ Successfully synced to $TARGET_ENV_FILE"
   echo "EXPO_PUBLIC_SUPABASE_URL=$EXPO_PUBLIC_SUPABASE_URL"
   echo "EXPO_PUBLIC_SUPABASE_KEY=$EXPO_PUBLIC_SUPABASE_KEY"
-  
-  exit 0
+
+  return 0
 fi
 
 echo "Pulling environment variables from EAS ($ENV)..."
@@ -83,5 +85,5 @@ if [ $? -eq 0 ]; then
   echo "✅ Successfully synced to $TARGET_ENV_FILE"
 else
   echo "❌ Failed to pull from EAS"
-  exit 1
+  return 1
 fi

@@ -5,6 +5,7 @@
   "scripts": {
     "start": "bash ./scripts/sync-env.sh local && expo start --clear",
     "start-prod": "bash ./scripts/sync-env.sh production && expo start --clear",
+    "start-prod-local": "bash ./scripts/sync-env.sh prod-local && expo start --clear",
     "reset-project": "node ./scripts/reset-project.js",
     "update-types": "npx supabase gen types typescript --local > types/database-generated.types.ts",
     "android": "expo run:android",

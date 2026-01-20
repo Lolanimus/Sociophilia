@@ -1,4 +1,5 @@
 import { login } from "@/api/auth";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useError, useErrorActions } from "@/states_store/errorStore";
 import { useStyles } from "@/utils/styles";
 import { Button } from "@react-navigation/elements";
@@ -17,6 +18,13 @@ export default function LoginScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const styles = useStyles();
+  // State variable to track password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Function to toggle the password visibility state
+  const toggleShowPassword = () => {
+      setShowPassword(!showPassword);
+  };
 
   const submitEvent = async () => {
     // Clear any previous error before attempting login
@@ -44,9 +52,17 @@ export default function LoginScreen() {
       <View style={styles.containerInner}>
         <Text style={styles.label}>Password</Text>
         <TextInput
+            secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
           style={styles.textInput}
+        />
+        <MaterialCommunityIcons
+            name={showPassword ? "eye-off-outline" : "eye-outline"}
+            size={24}
+            color="gray"
+            onPress={toggleShowPassword}
+            style={{ position: 'absolute', right: 10, top: 35 }}
         />
       </View>
       <View style={styles.containerInner}>
