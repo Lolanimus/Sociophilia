@@ -4,6 +4,8 @@
 
 **More Info on the Project: [artemmelnikov.com/2026/01/11/sociophilia/](https://artemmelnikov.com/2026/01/11/sociophilia/)**
 
+**You can add me and message me, my username is 'lolan'.**
+
 [![Watch the video](https://artemmelnikov.com/wp-content/uploads/2026/01/Sociophilia.mov)](https://artemmelnikov.com/wp-content/uploads/2026/01/Sociophilia.mov)
 
 ### If you have Expo Go on your phone, you can scan this QR Code and check the mobile version of this app:
